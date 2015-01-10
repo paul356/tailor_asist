@@ -1,0 +1,509 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7F606A7219A2383E00E961C6 /* ActiveCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F606A7119A2383E00E961C6 /* ActiveCurve.m */; };
+		7F6DCE70198647B90097FCEB /* UITailorTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F6DCE6F198647B90097FCEB /* UITailorTableView.m */; };
+		7F73021519B68275008B1241 /* Matrix2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F73021419B68275008B1241 /* Matrix2D.m */; };
+		7FABC7741947C42C008E8437 /* jesus.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7FABC7731947C42C008E8437 /* jesus.jpg */; };
+		7FB3F9D519448D3900967A11 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D419448D3900967A11 /* Foundation.framework */; };
+		7FB3F9D719448D3900967A11 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D619448D3900967A11 /* CoreGraphics.framework */; };
+		7FB3F9D919448D3900967A11 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D819448D3900967A11 /* UIKit.framework */; };
+		7FB3F9DF19448D3900967A11 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7FB3F9DD19448D3900967A11 /* InfoPlist.strings */; };
+		7FB3F9E119448D3900967A11 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB3F9E019448D3900967A11 /* main.m */; };
+		7FB3F9E519448D3900967A11 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB3F9E419448D3900967A11 /* AppDelegate.m */; };
+		7FB3F9E819448D3900967A11 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FB3F9E619448D3900967A11 /* Main_iPhone.storyboard */; };
+		7FB3F9EB19448D3900967A11 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FB3F9E919448D3900967A11 /* Main_iPad.storyboard */; };
+		7FB3F9EE19448D3900967A11 /* WorkTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB3F9ED19448D3900967A11 /* WorkTableViewController.m */; };
+		7FB3F9F019448D3900967A11 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FB3F9EF19448D3900967A11 /* Images.xcassets */; };
+		7FB3F9F719448D3900967A11 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9F619448D3900967A11 /* XCTest.framework */; };
+		7FB3F9F819448D3900967A11 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D419448D3900967A11 /* Foundation.framework */; };
+		7FB3F9F919448D3900967A11 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D819448D3900967A11 /* UIKit.framework */; };
+		7FB3FA0119448D3900967A11 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7FB3F9FF19448D3900967A11 /* InfoPlist.strings */; };
+		7FB3FA0319448D3900967A11 /* TailorAsistTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB3FA0219448D3900967A11 /* TailorAsistTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7FB3F9FA19448D3900967A11 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7FB3F9C919448D3900967A11 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7FB3F9D019448D3900967A11;
+			remoteInfo = TailorAsist;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		7F606A7019A2383E00E961C6 /* ActiveCurve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveCurve.h; sourceTree = "<group>"; };
+		7F606A7119A2383E00E961C6 /* ActiveCurve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActiveCurve.m; sourceTree = "<group>"; };
+		7F6DCE6E198647B90097FCEB /* UITailorTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITailorTableView.h; sourceTree = "<group>"; };
+		7F6DCE6F198647B90097FCEB /* UITailorTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITailorTableView.m; sourceTree = "<group>"; };
+		7F73021319B68275008B1241 /* Matrix2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix2D.h; sourceTree = "<group>"; };
+		7F73021419B68275008B1241 /* Matrix2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix2D.m; sourceTree = "<group>"; };
+		7FABC7731947C42C008E8437 /* jesus.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = jesus.jpg; sourceTree = "<group>"; };
+		7FB3F9D119448D3900967A11 /* TailorAsist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TailorAsist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FB3F9D419448D3900967A11 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		7FB3F9D619448D3900967A11 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		7FB3F9D819448D3900967A11 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		7FB3F9DC19448D3900967A11 /* TailorAsist-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TailorAsist-Info.plist"; sourceTree = "<group>"; };
+		7FB3F9DE19448D3900967A11 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7FB3F9E019448D3900967A11 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		7FB3F9E219448D3900967A11 /* TailorAsist-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TailorAsist-Prefix.pch"; sourceTree = "<group>"; };
+		7FB3F9E319448D3900967A11 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		7FB3F9E419448D3900967A11 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		7FB3F9E719448D3900967A11 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		7FB3F9EA19448D3900967A11 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		7FB3F9EC19448D3900967A11 /* WorkTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkTableViewController.h; sourceTree = "<group>"; };
+		7FB3F9ED19448D3900967A11 /* WorkTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WorkTableViewController.m; sourceTree = "<group>"; };
+		7FB3F9EF19448D3900967A11 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		7FB3F9F519448D3900967A11 /* TailorAsistTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TailorAsistTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FB3F9F619448D3900967A11 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		7FB3F9FE19448D3900967A11 /* TailorAsistTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TailorAsistTests-Info.plist"; sourceTree = "<group>"; };
+		7FB3FA0019448D3900967A11 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7FB3FA0219448D3900967A11 /* TailorAsistTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TailorAsistTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7FB3F9CE19448D3900967A11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FB3F9D719448D3900967A11 /* CoreGraphics.framework in Frameworks */,
+				7FB3F9D919448D3900967A11 /* UIKit.framework in Frameworks */,
+				7FB3F9D519448D3900967A11 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FB3F9F219448D3900967A11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FB3F9F719448D3900967A11 /* XCTest.framework in Frameworks */,
+				7FB3F9F919448D3900967A11 /* UIKit.framework in Frameworks */,
+				7FB3F9F819448D3900967A11 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7FB3F9C819448D3900967A11 = {
+			isa = PBXGroup;
+			children = (
+				7FB3F9DA19448D3900967A11 /* TailorAsist */,
+				7FB3F9FC19448D3900967A11 /* TailorAsistTests */,
+				7FB3F9D319448D3900967A11 /* Frameworks */,
+				7FB3F9D219448D3900967A11 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7FB3F9D219448D3900967A11 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7FB3F9D119448D3900967A11 /* TailorAsist.app */,
+				7FB3F9F519448D3900967A11 /* TailorAsistTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7FB3F9D319448D3900967A11 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7FB3F9D419448D3900967A11 /* Foundation.framework */,
+				7FB3F9D619448D3900967A11 /* CoreGraphics.framework */,
+				7FB3F9D819448D3900967A11 /* UIKit.framework */,
+				7FB3F9F619448D3900967A11 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7FB3F9DA19448D3900967A11 /* TailorAsist */ = {
+			isa = PBXGroup;
+			children = (
+				7FB3F9E319448D3900967A11 /* AppDelegate.h */,
+				7FB3F9E419448D3900967A11 /* AppDelegate.m */,
+				7FB3F9E619448D3900967A11 /* Main_iPhone.storyboard */,
+				7FB3F9E919448D3900967A11 /* Main_iPad.storyboard */,
+				7FB3F9EC19448D3900967A11 /* WorkTableViewController.h */,
+				7FB3F9ED19448D3900967A11 /* WorkTableViewController.m */,
+				7F73021319B68275008B1241 /* Matrix2D.h */,
+				7F73021419B68275008B1241 /* Matrix2D.m */,
+				7F606A7019A2383E00E961C6 /* ActiveCurve.h */,
+				7F606A7119A2383E00E961C6 /* ActiveCurve.m */,
+				7F6DCE6E198647B90097FCEB /* UITailorTableView.h */,
+				7F6DCE6F198647B90097FCEB /* UITailorTableView.m */,
+				7FB3F9EF19448D3900967A11 /* Images.xcassets */,
+				7FB3F9DB19448D3900967A11 /* Supporting Files */,
+			);
+			path = TailorAsist;
+			sourceTree = "<group>";
+		};
+		7FB3F9DB19448D3900967A11 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7FB3F9DC19448D3900967A11 /* TailorAsist-Info.plist */,
+				7FB3F9DD19448D3900967A11 /* InfoPlist.strings */,
+				7FB3F9E019448D3900967A11 /* main.m */,
+				7FB3F9E219448D3900967A11 /* TailorAsist-Prefix.pch */,
+				7FABC7731947C42C008E8437 /* jesus.jpg */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7FB3F9FC19448D3900967A11 /* TailorAsistTests */ = {
+			isa = PBXGroup;
+			children = (
+				7FB3FA0219448D3900967A11 /* TailorAsistTests.m */,
+				7FB3F9FD19448D3900967A11 /* Supporting Files */,
+			);
+			path = TailorAsistTests;
+			sourceTree = "<group>";
+		};
+		7FB3F9FD19448D3900967A11 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7FB3F9FE19448D3900967A11 /* TailorAsistTests-Info.plist */,
+				7FB3F9FF19448D3900967A11 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7FB3F9D019448D3900967A11 /* TailorAsist */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FB3FA0619448D3900967A11 /* Build configuration list for PBXNativeTarget "TailorAsist" */;
+			buildPhases = (
+				7FB3F9CD19448D3900967A11 /* Sources */,
+				7FB3F9CE19448D3900967A11 /* Frameworks */,
+				7FB3F9CF19448D3900967A11 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TailorAsist;
+			productName = TailorAsist;
+			productReference = 7FB3F9D119448D3900967A11 /* TailorAsist.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7FB3F9F419448D3900967A11 /* TailorAsistTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FB3FA0919448D3900967A11 /* Build configuration list for PBXNativeTarget "TailorAsistTests" */;
+			buildPhases = (
+				7FB3F9F119448D3900967A11 /* Sources */,
+				7FB3F9F219448D3900967A11 /* Frameworks */,
+				7FB3F9F319448D3900967A11 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7FB3F9FB19448D3900967A11 /* PBXTargetDependency */,
+			);
+			name = TailorAsistTests;
+			productName = TailorAsistTests;
+			productReference = 7FB3F9F519448D3900967A11 /* TailorAsistTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7FB3F9C919448D3900967A11 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = user1;
+				TargetAttributes = {
+					7FB3F9F419448D3900967A11 = {
+						TestTargetID = 7FB3F9D019448D3900967A11;
+					};
+				};
+			};
+			buildConfigurationList = 7FB3F9CC19448D3900967A11 /* Build configuration list for PBXProject "TailorAsist" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7FB3F9C819448D3900967A11;
+			productRefGroup = 7FB3F9D219448D3900967A11 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7FB3F9D019448D3900967A11 /* TailorAsist */,
+				7FB3F9F419448D3900967A11 /* TailorAsistTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7FB3F9CF19448D3900967A11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FB3F9EB19448D3900967A11 /* Main_iPad.storyboard in Resources */,
+				7FB3F9F019448D3900967A11 /* Images.xcassets in Resources */,
+				7FB3F9E819448D3900967A11 /* Main_iPhone.storyboard in Resources */,
+				7FABC7741947C42C008E8437 /* jesus.jpg in Resources */,
+				7FB3F9DF19448D3900967A11 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FB3F9F319448D3900967A11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FB3FA0119448D3900967A11 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7FB3F9CD19448D3900967A11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FB3F9EE19448D3900967A11 /* WorkTableViewController.m in Sources */,
+				7FB3F9E519448D3900967A11 /* AppDelegate.m in Sources */,
+				7F73021519B68275008B1241 /* Matrix2D.m in Sources */,
+				7F606A7219A2383E00E961C6 /* ActiveCurve.m in Sources */,
+				7F6DCE70198647B90097FCEB /* UITailorTableView.m in Sources */,
+				7FB3F9E119448D3900967A11 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FB3F9F119448D3900967A11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FB3FA0319448D3900967A11 /* TailorAsistTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7FB3F9FB19448D3900967A11 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7FB3F9D019448D3900967A11 /* TailorAsist */;
+			targetProxy = 7FB3F9FA19448D3900967A11 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		7FB3F9DD19448D3900967A11 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7FB3F9DE19448D3900967A11 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		7FB3F9E619448D3900967A11 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7FB3F9E719448D3900967A11 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		7FB3F9E919448D3900967A11 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7FB3F9EA19448D3900967A11 /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		7FB3F9FF19448D3900967A11 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7FB3FA0019448D3900967A11 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7FB3FA0419448D3900967A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7FB3FA0519448D3900967A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7FB3FA0719448D3900967A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TailorAsist/TailorAsist-Prefix.pch";
+				INFOPLIST_FILE = "TailorAsist/TailorAsist-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		7FB3FA0819448D3900967A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TailorAsist/TailorAsist-Prefix.pch";
+				INFOPLIST_FILE = "TailorAsist/TailorAsist-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		7FB3FA0A19448D3900967A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/TailorAsist.app/TailorAsist";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TailorAsist/TailorAsist-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "TailorAsistTests/TailorAsistTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		7FB3FA0B19448D3900967A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/TailorAsist.app/TailorAsist";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "TailorAsist/TailorAsist-Prefix.pch";
+				INFOPLIST_FILE = "TailorAsistTests/TailorAsistTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7FB3F9CC19448D3900967A11 /* Build configuration list for PBXProject "TailorAsist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FB3FA0419448D3900967A11 /* Debug */,
+				7FB3FA0519448D3900967A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7FB3FA0619448D3900967A11 /* Build configuration list for PBXNativeTarget "TailorAsist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FB3FA0719448D3900967A11 /* Debug */,
+				7FB3FA0819448D3900967A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7FB3FA0919448D3900967A11 /* Build configuration list for PBXNativeTarget "TailorAsistTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FB3FA0A19448D3900967A11 /* Debug */,
+				7FB3FA0B19448D3900967A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7FB3F9C919448D3900967A11 /* Project object */;
+}
