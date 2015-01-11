@@ -58,13 +58,28 @@
     [_currCurve drawCurve:c];
 }
 
-- (void)addPoint:(CGPoint *)pt
+- (void)setStartPoint:(CGPoint *)pt
 {
+    ActiveCurve* curr;
     if (_nextCurveReady) {
-        [_nextCurve.pts addPointer:pt];
+        curr = _nextCurve;
     } else {
-        [_currCurve.pts addPointer:pt];
+        curr = _currCurve;
     }
+    
+    curr.startPt = pt;
+}
+
+- (void)updateEndPoint:(CGPoint *)pt
+{
+    ActiveCurve* curr;
+    if (_nextCurveReady) {
+        curr = _nextCurve;
+    } else {
+        curr = _currCurve;
+    }
+    
+    curr.endPt = pt;
 }
 
 - (void)setStartAngle:(double)angl
@@ -84,24 +99,25 @@
     } else {
         curr = _currCurve;
     }
-    if (type == BSPLINE) {
-        [curr calcDistArr];
-    }
     curr.lineType = type;
 }
 
 - (void)setNextCurveReady
 {
+    // TODO: synchronize this code
     _nextCurveReady = true;
 }
 
 - (void)switchCurrNextCurve
 {
+    // TODO: synchronize this code
     ActiveCurve* tmp = _currCurve;
     _currCurve = _nextCurve;
     _nextCurve = tmp;
     _nextCurveReady = false;
-    [_nextCurve emptyPoints];
-    
+    free(_nextCurve.startPt);
+    _nextCurve.startPt = NULL;
+    free(_nextCurve.endPt);
+    _nextCurve.endPt = NULL;
 }
 @end

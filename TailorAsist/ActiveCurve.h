@@ -22,13 +22,11 @@ double calcDist(CGPoint* startPt, CGPoint* endPt);
 double angleDiff(double ang1, double ang2);
 
 @interface ActiveCurve : NSObject
-@property (nonatomic) NSPointerArray* pts;
+@property (nonatomic) CGPoint* startPt;
+@property (nonatomic) CGPoint* endPt;
 @property (nonatomic) double startAngle;
 @property (nonatomic) double endAngle;
-@property (nonatomic) double* distArr;
 @property (nonatomic) enum CurveType lineType;
 - (instancetype)init;
-- (void)emptyPoints;
-- (void)calcDistArr;
 - (void)drawCurve:(CGContextRef)ctx;
 @end

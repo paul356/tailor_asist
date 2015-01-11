@@ -32,18 +32,15 @@
 {
     NSPointerArray* pts = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsStructPersonality|NSPointerFunctionsMallocMemory];
     CGPoint *pt1 = (CGPoint*)malloc(sizeof(CGPoint));
-    CGPoint *pt2 = (CGPoint*)
+    CGPoint *pt2 = (CGPoint*)malloc(sizeof(CGPoint));
     
-    pt1.x = 1; pt1.y = 2;
-    pt2.x = 3; pt2.y = 4;
+    pt1->x = 1; pt1->y = 2;
+    pt2->x = 3; pt2->y = 4;
     
-    [pts addPointer:&pt1];
-    [pts addPointer:&pt2];
+    [pts addPointer:nil];
+    [pts replacePointerAtIndex:0 withPointer:pt2];
     
-    for (id pt in pts) {
-        CGPoint* tpt = (__bridge CGPoint *)pt;
-        NSLog(@"(%f %f)\n", tpt->x, tpt->y);
-    }
+    NSLog(@"Done\n");
 }
 
 - (void)subTestExample1
@@ -123,6 +120,7 @@
 
 - (void)subTestExample2
 {
+    /*
     ActiveCurve* ac = [[ActiveCurve alloc] init];
     
     NSUInteger cnt = 15;
@@ -138,18 +136,19 @@
     
     [ac calcDistArr];
     ac.lineType = BSPLINE;
-/*
+
     for (int i = 3; i < cnt; i++) {
         CGPoint pt = [ac calcBSplinePoint:i-3 Index:i];
         NSLog(@"(%lf %lf) ", pt.x, pt.y);
     }
- */
+     
     NSLog(@"\n");
+    */
 }
 
 - (void)testExample
 {
-    [self subTestExample2];
+    [self subTestExample0];
 }
 
 @end

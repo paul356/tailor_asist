@@ -29,7 +29,6 @@ NSInteger sortDouble(id num1, id num2, void *context)
 }
 
 @interface WorkTableViewController () {
-    NSPointerArray* ptsArr;
 }
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property UITailorTableView *tableView;
@@ -41,27 +40,17 @@ NSInteger sortDouble(id num1, id num2, void *context)
 - (void)handlePanGesture:(UIPanGestureRecognizer*) recognizer
 {
     CGPoint pt = [recognizer locationInView:self.tableView];
-    CGPoint* savePt = malloc(sizeof(CGPoint));
-    CGPoint* viewPt = malloc(sizeof(CGPoint));
-    *savePt = pt;
-    *viewPt = pt;
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"curve begin\n");
-        [ptsArr setCount:0];
-        [ptsArr addPointer:savePt];
+        CGPoint* savePt = (CGPoint*)malloc(sizeof(CGPoint));
+        *savePt = pt;
         [self.tableView setNextCurveReady];
-        [self.tableView addPoint:viewPt];
-    } else if (recognizer.state == UIGestureRecognizerStateChanged) {
-        [ptsArr replacePointerAtIndex:1 withPointer:savePt];
-        [self.tableView addPoint:viewPt];
-    } else if (recognizer.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"curve end\n");
-        [ptsArr addPointer:savePt];
-        [self.tableView addPoint:viewPt];
-        if ([ptsArr count] >= minLinePointNum) {
-            [self.tableView setLineType:BSPLINE];
-        }
+        [self.tableView setStartPoint:savePt];
+    } else if (recognizer.state == UIGestureRecognizerStateChanged ||
+               recognizer.state == UIGestureRecognizerStateEnded) {
+        CGPoint* savePt = (CGPoint*)malloc(sizeof(CGPoint));
+        *savePt = pt;
+        [self.tableView updateEndPoint:savePt];
     }
     [self.tableView setNeedsDisplay];
 }
@@ -80,8 +69,6 @@ NSInteger sortDouble(id num1, id num2, void *context)
     
     [self.tableView addGestureRecognizer:panDetector];
     
-    ptsArr = [NSPointerArray pointerArrayWithOptions:NSPointerFunctionsMallocMemory|NSPointerFunctionsStructPersonality];
-    startAngle = INVALID_ANGLE;
 }
 
 - (void)viewWillAppear:(BOOL)animated

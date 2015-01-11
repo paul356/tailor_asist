@@ -11,7 +11,8 @@
 
 @interface UITailorTableView : UIView//UIImageView
 - (void)drawRect:(CGRect)rect;
-- (void)addPoint:(CGPoint *)pt;
+- (void)setStartPoint:(CGPoint *)pt;
+- (void)updateEndPoint:(CGPoint *)pt;
 - (void)setNextCurveReady;
 - (void)setStartAngle:(double)angl;
 - (void)setLineType:(enum CurveType)type;
