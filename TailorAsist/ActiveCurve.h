@@ -22,11 +22,12 @@ double calcDist(CGPoint* startPt, CGPoint* endPt);
 double angleDiff(double ang1, double ang2);
 
 @interface ActiveCurve : NSObject
-@property (nonatomic) CGPoint* startPt;
-@property (nonatomic) CGPoint* endPt;
-@property (nonatomic) double startAngle;
-@property (nonatomic) double endAngle;
 @property (nonatomic) enum CurveType lineType;
+@property (nonatomic) CGPoint startPt;
+@property (nonatomic) CGPoint endPt;
+// The circle is draw clock-wise
+@property (nonatomic) CGPoint top;
 - (instancetype)init;
+- (void)copyCurve:(ActiveCurve*)curve;
 - (void)drawCurve:(CGContextRef)ctx;
 @end

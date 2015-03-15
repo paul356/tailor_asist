@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7FB3F9D019448D3900967A11"
-               BuildableName = "TailorAsist.app"
-               BlueprintName = "TailorAsist"
-               ReferencedContainer = "container:TailorAsist.xcodeproj">
+               BuildableName = "TailorAssistor.app"
+               BlueprintName = "TailorAssistor"
+               ReferencedContainer = "container:TailorAssistor.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7FB3F9F419448D3900967A11"
-               BuildableName = "TailorAsistTests.xctest"
-               BlueprintName = "TailorAsistTests"
-               ReferencedContainer = "container:TailorAsist.xcodeproj">
+               BuildableName = "TailorAssistorTests.xctest"
+               BlueprintName = "TailorAssistorTests"
+               ReferencedContainer = "container:TailorAssistor.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -43,9 +43,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7FB3F9D019448D3900967A11"
-            BuildableName = "TailorAsist.app"
-            BlueprintName = "TailorAsist"
-            ReferencedContainer = "container:TailorAsist.xcodeproj">
+            BuildableName = "TailorAssistor.app"
+            BlueprintName = "TailorAssistor"
+            ReferencedContainer = "container:TailorAssistor.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7FB3F9D019448D3900967A11"
-            BuildableName = "TailorAsist.app"
-            BlueprintName = "TailorAsist"
-            ReferencedContainer = "container:TailorAsist.xcodeproj">
+            BuildableName = "TailorAssistor.app"
+            BlueprintName = "TailorAssistor"
+            ReferencedContainer = "container:TailorAssistor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -80,9 +80,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7FB3F9D019448D3900967A11"
-            BuildableName = "TailorAsist.app"
-            BlueprintName = "TailorAsist"
-            ReferencedContainer = "container:TailorAsist.xcodeproj">
+            BuildableName = "TailorAssistor.app"
+            BlueprintName = "TailorAssistor"
+            ReferencedContainer = "container:TailorAssistor.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

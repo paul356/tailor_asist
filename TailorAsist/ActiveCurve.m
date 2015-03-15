@@ -40,28 +40,96 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
 @implementation ActiveCurve
 - (instancetype)init
 {
-    self.startAngle = INVALID_ANGLE;
-    self.lineType = UNKNOWN;
+    self.lineType = LINE;
     return self;
+}
+
+- (void)copyCurve:(ActiveCurve*)curve
+{
+    self.lineType   = curve.lineType;
+    self.startPt    = curve.startPt;
+    self.endPt      = curve.endPt;
+    self.top        = curve.top;
 }
 
 - (void)drawCurve:(CGContextRef)ctx
 {
+    CGFloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    CGFloat red[4] = {1.0f, 0.0f, 0.0f, 1.0f};
     if (self.lineType == LINE) {
-        CGFloat green[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-        CGContextSetStrokeColor(ctx, green);
-        CGContextBeginPath(ctx);
-        //CGContextMoveToPoint(ctx, start->x, start->y);
-        //CGContextAddLineToPoint(ctx, end->x, end->y);
-        CGContextStrokePath(ctx);
-    } else {
-        CGFloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+
         CGContextSetStrokeColor(ctx, white);
+        CGContextSetLineWidth(ctx, 1.0);
+                
         CGContextBeginPath(ctx);
-        bool first = true;
-        CGPoint* start = NULL;
-        CGPoint* elmt  = NULL;
+        CGContextMoveToPoint(ctx, self.startPt.x, self.startPt.y);
+        CGContextAddLineToPoint(ctx, self.endPt.x, self.endPt.y);
         CGContextStrokePath(ctx);
+        
+        CGContextBeginPath(ctx);
+        CGContextAddArc(ctx, self.startPt.x, self.startPt.y, 3, 0, 2*PI, 0);
+        CGContextClosePath(ctx);
+        CGContextStrokePath(ctx);
+        
+        CGContextBeginPath(ctx);
+        CGContextAddArc(ctx, self.endPt.x, self.endPt.y, 3, 0, 2*PI, 0);
+        CGContextClosePath(ctx);
+        CGContextStrokePath(ctx);
+
+    } else if (self.lineType == CIRCLE) {
+        
+        CGPoint perp;
+        perp.x = (2*self.top.x - self.startPt.x - self.endPt.x)/2.0;
+        perp.y = (2*self.top.y - self.startPt.y - self.endPt.y)/2.0;
+        
+        double perpNorm2 = perp.x * perp.x + perp.y * perp.y;
+        if (perpNorm2 < 0.5) {
+            return;
+        }
+        
+        double perpNorm = sqrt(perpNorm2);
+        double radius = ((self.endPt.x - self.startPt.x)*(self.endPt.x - self.startPt.x) + (self.endPt.y - self.startPt.y)*(self.endPt.y - self.startPt.y))/(8*perpNorm) + perpNorm/2.0;
+        CGPoint center;
+        center.x = self.top.x - perp.x*radius/perpNorm;
+        center.y = self.top.y - perp.y*radius/perpNorm;
+        
+        GLfloat start = calcAngle(&center, &self->_startPt);
+        GLfloat end   = calcAngle(&center, &self->_endPt);
+        
+        CGContextSaveGState(ctx);
+        
+        CGContextSetStrokeColor(ctx, white);
+        CGContextSetLineWidth(ctx, 1.0);
+        
+        CGContextBeginPath(ctx);
+        CGContextAddArc(ctx, center.x, center.y, radius, start, end, 0);
+        CGContextStrokePath(ctx);
+        
+        CGContextBeginPath(ctx);
+        CGContextAddArc(ctx, self.startPt.x, self.startPt.y, 3, 0, 2*PI, 0);
+        CGContextClosePath(ctx);
+        CGContextStrokePath(ctx);
+        
+        CGContextBeginPath(ctx);
+        CGContextAddArc(ctx, self.endPt.x, self.endPt.y, 3, 0, 2*PI, 0);
+        CGContextClosePath(ctx);
+        CGContextStrokePath(ctx);
+        
+        CGContextBeginPath(ctx);
+        CGContextAddArc(ctx, self.top.x, self.top.y, 3, 0, 2*PI, 0);
+        CGContextClosePath(ctx);
+        CGContextStrokePath(ctx);
+        
+        CGFloat dash[] = {2.0, 2.0};
+        CGContextSetLineDash(ctx, 0, dash, 2);
+        CGContextSetStrokeColor(ctx, white);
+        
+        CGContextBeginPath(ctx);
+        CGContextMoveToPoint(ctx, self.startPt.x, self.startPt.y);
+        CGContextAddLineToPoint(ctx, self.endPt.x, self.endPt.y);
+        CGContextStrokePath(ctx);
+
+        CGContextRestoreGState(ctx);
     }
 }
 

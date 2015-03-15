@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:TailorAsist.xcodeproj">
+      location = "self:TailorAssistor.xcodeproj">
    </FileRef>
 </Workspace>

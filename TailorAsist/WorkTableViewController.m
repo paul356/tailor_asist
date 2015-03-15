@@ -9,6 +9,7 @@
 #import "WorkTableViewController.h"
 #import "UITailorTableView.h"
 #import "ActiveCurve.h"
+#import "CurveSetObj.h"
 #import "Matrix2D.h"
 
 const NSUInteger minLinePointNum = 16;
@@ -28,11 +29,23 @@ NSInteger sortDouble(id num1, id num2, void *context)
         return NSOrderedSame;
 }
 
+enum ControlState {
+    SELECT,
+    DRAW_LINE,
+    DRAW_CIRCLE,
+    MOVE
+};
+
 @interface WorkTableViewController () {
+    CurveSetObj *_curveSet;
+    enum ControlState _controlState;
 }
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
-@property UITailorTableView *tableView;
+@property (nonatomic) UITailorTableView *tableView;
 - (void)handlePanGesture:(UIPanGestureRecognizer*) recognizer;
+@end
+@interface WorkTableViewController() {
+}
 @end
 
 @implementation WorkTableViewController
@@ -41,25 +54,33 @@ NSInteger sortDouble(id num1, id num2, void *context)
 {
     CGPoint pt = [recognizer locationInView:self.tableView];
     
-    if (recognizer.state == UIGestureRecognizerStateBegan) {
-        CGPoint* savePt = (CGPoint*)malloc(sizeof(CGPoint));
-        *savePt = pt;
-        [self.tableView setNextCurveReady];
-        [self.tableView setStartPoint:savePt];
-    } else if (recognizer.state == UIGestureRecognizerStateChanged ||
-               recognizer.state == UIGestureRecognizerStateEnded) {
-        CGPoint* savePt = (CGPoint*)malloc(sizeof(CGPoint));
-        *savePt = pt;
-        [self.tableView updateEndPoint:savePt];
+    if (_controlState == DRAW_LINE ||
+        _controlState == DRAW_CIRCLE) {
+        if (recognizer.state == UIGestureRecognizerStateBegan) {
+            if (_controlState == DRAW_CIRCLE) {
+                [self.tableView setLineType:CIRCLE];
+            } else if (_controlState == DRAW_LINE) {
+                [self.tableView setLineType:LINE];
+            }
+            [self.tableView setStartPoint:pt];
+        } else if (recognizer.state == UIGestureRecognizerStateChanged) {
+            [self.tableView updateEndPoint:pt];
+        } else if (recognizer.state == UIGestureRecognizerStateEnded) {
+            [self.tableView setEndPoint:pt];
+        }
+        NSLog(@"(%lf, %lf)\n", pt.x, pt.y);
+        [self.tableView setNeedsDisplay];
     }
-    [self.tableView setNeedsDisplay];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    self.tableView = [[UITailorTableView alloc] initWithFrame:self.scrollView.bounds];
+    _curveSet = [[CurveSetObj alloc] init];
+    _controlState = DRAW_CIRCLE;
+    
+    self.tableView = [[UITailorTableView alloc] initWithFrame:self.scrollView.bounds curveSetObj:_curveSet];
     self.tableView.userInteractionEnabled = TRUE;
     [self.scrollView addSubview:self.tableView];
     self.scrollView.contentSize = self.scrollView.bounds.size;

@@ -8,116 +8,96 @@
 
 #import "UITailorTableView.h"
 #import "ActiveCurve.h"
+#import "CurveSetObj.h"
 
 @interface UITailorTableView () {
+    CurveSetObj* _curveSet;
     ActiveCurve* _currCurve;
-    ActiveCurve* _nextCurve;
-    bool _nextCurveReady;
+    BOOL _modified;
 }
-- (void)switchCurrNextCurve;
 @end
 
 @implementation UITailorTableView
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithFrame:(CGRect)frame curveSetObj:(CurveSetObj*)curveSet
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
         _currCurve = [[ActiveCurve alloc] init];
-        _nextCurve = [[ActiveCurve alloc] init];
-        _nextCurveReady = false;
+        _modified = FALSE;
+        
+        _curveSet = curveSet;
     }
+
     return self;
 }
 
 - (void)drawRect:(CGRect)rect
 {
-    [super drawRect:rect];
+    //[super drawRect:rect];
     CGContextRef c = UIGraphicsGetCurrentContext();
     
     // Outline the canvas
-    CGFloat red[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-    CGContextSetStrokeColor(c, red);
-    CGContextSetLineWidth(c, 4.0);
+    CGFloat black[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    CGContextSetFillColor(c, black);
     CGContextBeginPath(c);
-    CGPoint pts[5] = {
+    CGPoint pts[4] = {
         {rect.origin.x, rect.origin.y},
         {rect.origin.x + rect.size.width, rect.origin.y},
         {rect.origin.x + rect.size.width, rect.origin.y + rect.size.height},
-        {rect.origin.x, rect.origin.y + rect.size.height},
-        {rect.origin.x, rect.origin.y}};
-    CGContextAddLines(c, pts, 5);
-    CGContextStrokePath(c);
+        {rect.origin.x, rect.origin.y + rect.size.height}};
+    CGContextAddLines(c, pts, 4);
+    CGContextClosePath(c);
+    CGContextFillPath(c);
     
-    // Check if need switch
-    if (_nextCurveReady) {
-        [self switchCurrNextCurve];
+    [_curveSet drawCurveSet:c];
+    
+    if (_modified) {
+        [_currCurve drawCurve:c];
+        _modified = FALSE;
     }
-    
-    [_currCurve drawCurve:c];
 }
 
-- (void)setStartPoint:(CGPoint *)pt
+- (void)setStartPoint:(CGPoint)pt
 {
-    ActiveCurve* curr;
-    if (_nextCurveReady) {
-        curr = _nextCurve;
-    } else {
-        curr = _currCurve;
+    _currCurve.startPt = _currCurve.endPt = pt;
+    if (_currCurve.lineType == CIRCLE) {
+        _currCurve.top = _currCurve.startPt;
     }
-    
-    curr.startPt = pt;
+    _modified = TRUE;
 }
 
-- (void)updateEndPoint:(CGPoint *)pt
+- (void)updateEndPoint:(CGPoint)pt
 {
-    ActiveCurve* curr;
-    if (_nextCurveReady) {
-        curr = _nextCurve;
-    } else {
-        curr = _currCurve;
+    _currCurve.endPt = pt;
+    if (_currCurve.lineType == CIRCLE) {
+        double x = _currCurve.endPt.x - _currCurve.startPt.x;
+        double y = _currCurve.endPt.y - _currCurve.startPt.y;
+        double cosv = cos(60.0*PI/180);
+        double sinv = sin(60.0*PI/180);
+        CGPoint center;
+        center.x = cosv*x - sinv*y + _currCurve.startPt.x;
+        center.y = sinv*x + cosv*y + _currCurve.startPt.y;
+
+        cosv = cos(30.0*PI/180);
+        sinv = sin(30.0*PI/180);
+        _currCurve.top = CGPointMake(center.x + cosv*(_currCurve.startPt.x - center.x) - sinv*(_currCurve.startPt.y - center.y), center.y + sinv*(_currCurve.startPt.x - center.x) + cosv*(_currCurve.startPt.y - center.y));
     }
-    
-    curr.endPt = pt;
+    _modified = TRUE;
 }
 
-- (void)setStartAngle:(double)angl
+- (void)setEndPoint:(CGPoint)pt
 {
-    if (_nextCurveReady) {
-        _nextCurve.startAngle = angl;
-    } else {
-        _currCurve.startAngle = angl;
-    }
+    ActiveCurve* newCurve = [[ActiveCurve alloc] init];
+    [newCurve copyCurve:_currCurve];
+    [_curveSet addCurve:newCurve];
+    // Becuase _currCurve value is saved to _curveSet
+    // no need to set _modified to TRUE
 }
 
 - (void)setLineType:(enum CurveType)type
 {
-    ActiveCurve* curr = nil;
-    if (_nextCurveReady) {
-        curr = _nextCurve;
-    } else {
-        curr = _currCurve;
-    }
-    curr.lineType = type;
-}
-
-- (void)setNextCurveReady
-{
-    // TODO: synchronize this code
-    _nextCurveReady = true;
-}
-
-- (void)switchCurrNextCurve
-{
-    // TODO: synchronize this code
-    ActiveCurve* tmp = _currCurve;
-    _currCurve = _nextCurve;
-    _nextCurve = tmp;
-    _nextCurveReady = false;
-    free(_nextCurve.startPt);
-    _nextCurve.startPt = NULL;
-    free(_nextCurve.endPt);
-    _nextCurve.endPt = NULL;
+    _currCurve.lineType = type;
 }
 @end
