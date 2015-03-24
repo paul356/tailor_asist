@@ -13,24 +13,28 @@
 @interface UITailorTableView () {
     CurveSetObj* _curveSet;
     ActiveCurve* _currCurve;
+    CGPoint _trans;
     BOOL _modified;
+    BOOL _selected;
 }
 @end
 
 @implementation UITailorTableView
 
-- (id)initWithFrame:(CGRect)frame curveSetObj:(CurveSetObj*)curveSet
+- (void)initViewResources:(CurveSetObj*)curveSet
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-        _currCurve = [[ActiveCurve alloc] init];
-        _modified = FALSE;
-        
-        _curveSet = curveSet;
-    }
+    // Initialization code
+    _currCurve = [[ActiveCurve alloc] init];
+    _modified = FALSE;
+    _selected = FALSE;
+    _trans.x = _trans.y = 0;
+    
+    _curveSet = curveSet;
+}
 
-    return self;
+- (void)setCurveSet:(CurveSetObj *)curveSet
+{
+    _curveSet = curveSet;
 }
 
 - (void)drawRect:(CGRect)rect
@@ -51,38 +55,49 @@
     CGContextClosePath(c);
     CGContextFillPath(c);
     
-    [_curveSet drawCurveSet:c];
+    CGColorRef white = [[UIColor colorWithWhite:1.0 alpha:1.0] CGColor];
+    [_curveSet drawCurveSet:c color:white];
     
+    assert(!(_modified && _selected));
     if (_modified) {
-        [_currCurve drawCurve:c];
+        [_currCurve drawCurve:c color:white];
         _modified = FALSE;
+    }
+    if (_selected) {
+        ActiveCurve *curve = [[ActiveCurve alloc] init];
+        [curve copyCurve:_currCurve];
+        curve.start = CGPointMake(curve.start.x + _trans.x, curve.start.y + _trans.y);
+        curve.top   = CGPointMake(curve.top.x + _trans.x, curve.top.y + _trans.y);
+        curve.end   = CGPointMake(curve.end.x + _trans.x, curve.end.y + _trans.y);
+        [curve drawCurve:c color:[[UIColor colorWithWhite:0.5 alpha:0.5] CGColor]];
+        NSLog(@"Draw translation %f %f\n", _trans.x, _trans.y);
     }
 }
 
 - (void)setStartPoint:(CGPoint)pt
 {
-    _currCurve.startPt = _currCurve.endPt = pt;
+    _currCurve.start = _currCurve.end = pt;
     if (_currCurve.lineType == CIRCLE) {
-        _currCurve.top = _currCurve.startPt;
+        _currCurve.top = _currCurve.start;
     }
     _modified = TRUE;
 }
 
 - (void)updateEndPoint:(CGPoint)pt
 {
-    _currCurve.endPt = pt;
+    _currCurve.end = pt;
     if (_currCurve.lineType == CIRCLE) {
-        double x = _currCurve.endPt.x - _currCurve.startPt.x;
-        double y = _currCurve.endPt.y - _currCurve.startPt.y;
+        double x = _currCurve.end.x - _currCurve.start.x;
+        double y = _currCurve.end.y - _currCurve.start.y;
         double cosv = cos(60.0*PI/180);
         double sinv = sin(60.0*PI/180);
         CGPoint center;
-        center.x = cosv*x - sinv*y + _currCurve.startPt.x;
-        center.y = sinv*x + cosv*y + _currCurve.startPt.y;
+        center.x = cosv*x - sinv*y + _currCurve.start.x;
+        center.y = sinv*x + cosv*y + _currCurve.start.y;
 
         cosv = cos(30.0*PI/180);
         sinv = sin(30.0*PI/180);
-        _currCurve.top = CGPointMake(center.x + cosv*(_currCurve.startPt.x - center.x) - sinv*(_currCurve.startPt.y - center.y), center.y + sinv*(_currCurve.startPt.x - center.x) + cosv*(_currCurve.startPt.y - center.y));
+        _currCurve.top = CGPointMake(center.x + cosv*(_currCurve.start.x - center.x) - sinv*(_currCurve.start.y - center.y), center.y + sinv*(_currCurve.start.x - center.x) + cosv*(_currCurve.start.y - center.y));
     }
     _modified = TRUE;
 }
@@ -94,6 +109,39 @@
     [_curveSet addCurve:newCurve];
     // Becuase _currCurve value is saved to _curveSet
     // no need to set _modified to TRUE
+    NSLog(@"Add curve start=(%f %f), top=(%f, %f), end=(%f, %f)\n", newCurve.start.x, newCurve.start.y, newCurve.top.x, newCurve.top.y, newCurve.end.x, newCurve.end.y);
+}
+
+- (void)updateTranslation:(CGPoint)pt
+{
+    _trans = pt;
+    _selected = TRUE;
+}
+
+- (void)endTranslation
+{
+    [_currCurve translate:_trans];
+    _trans.x = _trans.y = 0;
+}
+
+- (BOOL)hitTest:(CGPoint)pt
+{
+    if (_selected) {
+        ActiveCurve* tmpCurve = [[ActiveCurve alloc] init];
+        [_currCurve translate:_trans];
+        [tmpCurve copyCurve:_currCurve];
+        [_curveSet addCurve:tmpCurve];
+        _selected = FALSE;
+    }
+    
+    ActiveCurve* hitCurve = [_curveSet hitTestAndRemove:pt];
+    if (hitCurve) {
+        [_currCurve copyCurve:hitCurve];
+        _trans.x = _trans.y = 0;
+        _selected = TRUE;
+    }
+    
+    return hitCurve != nil;
 }
 
 - (void)setLineType:(enum CurveType)type

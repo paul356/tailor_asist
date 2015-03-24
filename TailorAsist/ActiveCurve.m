@@ -46,41 +46,41 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
 
 - (void)copyCurve:(ActiveCurve*)curve
 {
-    self.lineType   = curve.lineType;
-    self.startPt    = curve.startPt;
-    self.endPt      = curve.endPt;
-    self.top        = curve.top;
+    self.lineType = curve.lineType;
+    self.start    = curve.start;
+    self.end      = curve.end;
+    self.top      = curve.top;
 }
 
-- (void)drawCurve:(CGContextRef)ctx
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
 {
-    CGFloat white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-    CGFloat red[4] = {1.0f, 0.0f, 0.0f, 1.0f};
     if (self.lineType == LINE) {
+        CGContextSaveGState(ctx);
 
-        CGContextSetStrokeColor(ctx, white);
+        CGContextSetStrokeColorWithColor(ctx, co);
         CGContextSetLineWidth(ctx, 1.0);
                 
         CGContextBeginPath(ctx);
-        CGContextMoveToPoint(ctx, self.startPt.x, self.startPt.y);
-        CGContextAddLineToPoint(ctx, self.endPt.x, self.endPt.y);
+        CGContextMoveToPoint(ctx, self.start.x, self.start.y);
+        CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
         CGContextStrokePath(ctx);
         
         CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.startPt.x, self.startPt.y, 3, 0, 2*PI, 0);
+        CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
         CGContextClosePath(ctx);
         CGContextStrokePath(ctx);
         
         CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.endPt.x, self.endPt.y, 3, 0, 2*PI, 0);
+        CGContextAddArc(ctx, self.end.x, self.end.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
         CGContextClosePath(ctx);
         CGContextStrokePath(ctx);
-
+        
+        CGContextRestoreGState(ctx);
     } else if (self.lineType == CIRCLE) {
         
         CGPoint perp;
-        perp.x = (2*self.top.x - self.startPt.x - self.endPt.x)/2.0;
-        perp.y = (2*self.top.y - self.startPt.y - self.endPt.y)/2.0;
+        perp.x = (2*self.top.x - self.start.x - self.end.x)/2.0;
+        perp.y = (2*self.top.y - self.start.y - self.end.y)/2.0;
         
         double perpNorm2 = perp.x * perp.x + perp.y * perp.y;
         if (perpNorm2 < 0.5) {
@@ -88,17 +88,17 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         }
         
         double perpNorm = sqrt(perpNorm2);
-        double radius = ((self.endPt.x - self.startPt.x)*(self.endPt.x - self.startPt.x) + (self.endPt.y - self.startPt.y)*(self.endPt.y - self.startPt.y))/(8*perpNorm) + perpNorm/2.0;
+        double radius = ((self.end.x - self.start.x)*(self.end.x - self.start.x) + (self.end.y - self.start.y)*(self.end.y - self.start.y))/(8*perpNorm) + perpNorm/2.0;
         CGPoint center;
         center.x = self.top.x - perp.x*radius/perpNorm;
         center.y = self.top.y - perp.y*radius/perpNorm;
         
-        GLfloat start = calcAngle(&center, &self->_startPt);
-        GLfloat end   = calcAngle(&center, &self->_endPt);
+        GLfloat start = calcAngle(&center, &self->_start);
+        GLfloat end   = calcAngle(&center, &self->_end);
         
         CGContextSaveGState(ctx);
         
-        CGContextSetStrokeColor(ctx, white);
+        CGContextSetStrokeColorWithColor(ctx, co);
         CGContextSetLineWidth(ctx, 1.0);
         
         CGContextBeginPath(ctx);
@@ -106,31 +106,54 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextStrokePath(ctx);
         
         CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.startPt.x, self.startPt.y, 3, 0, 2*PI, 0);
+        CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
         CGContextClosePath(ctx);
         CGContextStrokePath(ctx);
         
         CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.endPt.x, self.endPt.y, 3, 0, 2*PI, 0);
+        CGContextAddArc(ctx, self.end.x, self.end.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
         CGContextClosePath(ctx);
         CGContextStrokePath(ctx);
         
         CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.top.x, self.top.y, 3, 0, 2*PI, 0);
+        CGContextAddArc(ctx, self.top.x, self.top.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
         CGContextClosePath(ctx);
         CGContextStrokePath(ctx);
         
         CGFloat dash[] = {2.0, 2.0};
         CGContextSetLineDash(ctx, 0, dash, 2);
-        CGContextSetStrokeColor(ctx, white);
         
         CGContextBeginPath(ctx);
-        CGContextMoveToPoint(ctx, self.startPt.x, self.startPt.y);
-        CGContextAddLineToPoint(ctx, self.endPt.x, self.endPt.y);
+        CGContextMoveToPoint(ctx, self.start.x, self.start.y);
+        CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
         CGContextStrokePath(ctx);
 
         CGContextRestoreGState(ctx);
     }
+}
+
+- (BOOL)hitControlPoint:(CGPoint)pt
+{
+    if (self.lineType == LINE) {
+        if (calcDist(&self->_start, &pt) < TOUCH_POINT_SIZE ||
+            calcDist(&self->_end, &pt) < TOUCH_POINT_SIZE) {
+            return TRUE;
+        }
+    } else if (self.lineType == CIRCLE) {
+        if (calcDist(&self->_top, &pt) < TOUCH_POINT_SIZE ||
+            calcDist(&self->_start, &pt) < TOUCH_POINT_SIZE ||
+            calcDist(&self->_end, &pt) < TOUCH_POINT_SIZE) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+- (void)translate:(CGPoint)pt
+{
+    self.start = CGPointMake(pt.x + self.start.x, pt.y + self.start.y);
+    self.end   = CGPointMake(pt.x + self.end.x, pt.y + self.end.y);
+    self.top   = CGPointMake(pt.x + self.top.x, pt.y + self.top.y);
 }
 
 @end

@@ -138,11 +138,11 @@
 				7F73021419B68275008B1241 /* Matrix2D.m */,
 				7F606A7019A2383E00E961C6 /* ActiveCurve.h */,
 				7F606A7119A2383E00E961C6 /* ActiveCurve.m */,
+				7F75DCAE1AAF231E00A97BDD /* CurveSetObj.h */,
+				7F75DCAF1AAF231E00A97BDD /* CurveSetObj.m */,
 				7F6DCE6E198647B90097FCEB /* UITailorTableView.h */,
 				7F6DCE6F198647B90097FCEB /* UITailorTableView.m */,
 				7FB3F9EF19448D3900967A11 /* Images.xcassets */,
-				7F75DCAE1AAF231E00A97BDD /* CurveSetObj.h */,
-				7F75DCAF1AAF231E00A97BDD /* CurveSetObj.m */,
 				7FB3F9DB19448D3900967A11 /* Supporting Files */,
 			);
 			path = TailorAsist;

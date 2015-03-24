@@ -11,6 +11,7 @@
 
 @interface CurveSetObj : NSObject
 - (instancetype)init;
-- (void)drawCurveSet:(CGContextRef) ctx;
+- (void)drawCurveSet:(CGContextRef)ctx color:(CGColorRef)co;
 - (void)addCurve:(ActiveCurve*)newCurve;
+- (ActiveCurve *)hitTestAndRemove:(CGPoint) pt;
 @end

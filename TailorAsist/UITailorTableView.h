@@ -11,10 +11,14 @@
 #import "CurveSetObj.h"
 
 @interface UITailorTableView : UIView//UIImageView
-- (id)initWithFrame:(CGRect)frame curveSetObj:(CurveSetObj*)curveSet;
+- (void)initViewResources:(CurveSetObj*)curveSet;
+- (void)setCurveSet:(CurveSetObj*)curveSet;
 - (void)drawRect:(CGRect)rect;
 - (void)setStartPoint:(CGPoint)pt;
 - (void)updateEndPoint:(CGPoint)pt;
 - (void)setEndPoint:(CGPoint)pt; // End point won't change
 - (void)setLineType:(enum CurveType)type;
+- (BOOL)hitTest:(CGPoint)pt;
+- (void)updateTranslation:(CGPoint)pt;
+- (void)endTranslation;
 @end

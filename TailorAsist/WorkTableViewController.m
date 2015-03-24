@@ -33,43 +33,26 @@ enum ControlState {
     SELECT,
     DRAW_LINE,
     DRAW_CIRCLE,
-    MOVE
 };
 
 @interface WorkTableViewController () {
+    UITailorTableView* _tailorView;
     CurveSetObj *_curveSet;
     enum ControlState _controlState;
-}
-@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
-@property (nonatomic) UITailorTableView *tableView;
-- (void)handlePanGesture:(UIPanGestureRecognizer*) recognizer;
-@end
-@interface WorkTableViewController() {
+    CGPoint _startPt;
+    BOOL _objectSelected;
 }
 @end
 
 @implementation WorkTableViewController
-
-- (void)handlePanGesture:(UIPanGestureRecognizer*) recognizer
-{
-    CGPoint pt = [recognizer locationInView:self.tableView];
-    
-    if (_controlState == DRAW_LINE ||
-        _controlState == DRAW_CIRCLE) {
-        if (recognizer.state == UIGestureRecognizerStateBegan) {
-            if (_controlState == DRAW_CIRCLE) {
-                [self.tableView setLineType:CIRCLE];
-            } else if (_controlState == DRAW_LINE) {
-                [self.tableView setLineType:LINE];
-            }
-            [self.tableView setStartPoint:pt];
-        } else if (recognizer.state == UIGestureRecognizerStateChanged) {
-            [self.tableView updateEndPoint:pt];
-        } else if (recognizer.state == UIGestureRecognizerStateEnded) {
-            [self.tableView setEndPoint:pt];
-        }
-        NSLog(@"(%lf, %lf)\n", pt.x, pt.y);
-        [self.tableView setNeedsDisplay];
+- (IBAction)setControlState:(id)sender {
+    UIBarButtonItem* barButton = (UIBarButtonItem*)sender;
+    if ([barButton.title isEqualToString:@"Cursor"]) {
+        _controlState = SELECT;
+    } else if ([barButton.title isEqualToString:@"Line"]) {
+        _controlState = DRAW_LINE;
+    } else if ([barButton.title isEqualToString:@"Circle"]) {
+        _controlState = DRAW_CIRCLE;
     }
 }
 
@@ -78,18 +61,18 @@ enum ControlState {
     [super viewDidLoad];
     
     _curveSet = [[CurveSetObj alloc] init];
-    _controlState = DRAW_CIRCLE;
+    _controlState = DRAW_LINE;
+    _objectSelected = FALSE;
     
-    self.tableView = [[UITailorTableView alloc] initWithFrame:self.scrollView.bounds curveSetObj:_curveSet];
-    self.tableView.userInteractionEnabled = TRUE;
-    [self.scrollView addSubview:self.tableView];
+    _tailorView = (UITailorTableView*)self.view;
+    [_tailorView initViewResources:_curveSet];
+/*
+    view = [[UITailorTableView alloc] initWithFrame:self.window.bounds curveSetObj:_curveSet];
+    view.userInteractionEnabled = TRUE;
+    [self.scrollView addSubview:_tailorView];
     self.scrollView.contentSize = self.scrollView.bounds.size;
-    
+ */
 	// Do any additional setup after loading the view, typically from a nib.
-    UIPanGestureRecognizer* panDetector = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-    
-    [self.tableView addGestureRecognizer:panDetector];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -106,6 +89,85 @@ enum ControlState {
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (touches.count == 1) {
+        CGPoint pt = [touches.anyObject locationInView:_tailorView];
+        switch (_controlState) {
+            case DRAW_LINE:
+            case DRAW_CIRCLE:
+                if (_controlState == DRAW_CIRCLE) {
+                    [_tailorView setLineType:CIRCLE];
+                } else if (_controlState == DRAW_LINE) {
+                    [_tailorView setLineType:LINE];
+                }
+                [_tailorView setStartPoint:pt];
+                [_tailorView setNeedsDisplay];
+                break;
+            case SELECT:
+                if ([_tailorView hitTest:pt]) {
+                    _objectSelected = TRUE;
+                    _startPt = pt;
+                }
+                [_tailorView setNeedsDisplay];
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (touches.count == 1) {
+        CGPoint pt = [touches.anyObject locationInView:_tailorView];
+        switch (_controlState) {
+            case DRAW_CIRCLE:
+            case DRAW_LINE:
+                [_tailorView updateEndPoint:pt];
+                [_tailorView setNeedsDisplay];
+                break;
+            case SELECT:
+                if (_objectSelected) {
+                    [_tailorView updateTranslation:CGPointMake(pt.x - _startPt.x, pt.y - _startPt.y)];
+                    [_tailorView setNeedsDisplay];
+                    NSLog(@"Translate to %f %f\n", pt.x - _startPt.x, pt.y - _startPt.y);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (touches.count == 1) {
+        CGPoint pt = [touches.anyObject locationInView:_tailorView];
+        switch (_controlState) {
+            case DRAW_LINE:
+            case DRAW_CIRCLE:
+                [_tailorView setEndPoint:pt];
+                [_tailorView setNeedsDisplay];
+                break;
+            case SELECT:
+                if (_objectSelected) {
+                    [_tailorView endTranslation];
+                    _objectSelected = FALSE;
+                    [_tailorView setNeedsDisplay];
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"Touch cancelled\n");
 }
 
 @end

@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-#define INVALID_ANGLE 1000.
 #define PI 3.1415926
+#define TOUCH_POINT_SIZE 3
 enum CurveType {
     LINE,
     CIRCLE,
@@ -23,11 +23,13 @@ double angleDiff(double ang1, double ang2);
 
 @interface ActiveCurve : NSObject
 @property (nonatomic) enum CurveType lineType;
-@property (nonatomic) CGPoint startPt;
-@property (nonatomic) CGPoint endPt;
+@property (nonatomic) CGPoint start;
+@property (nonatomic) CGPoint end;
 // The circle is draw clock-wise
 @property (nonatomic) CGPoint top;
 - (instancetype)init;
 - (void)copyCurve:(ActiveCurve*)curve;
-- (void)drawCurve:(CGContextRef)ctx;
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
+- (BOOL)hitControlPoint:(CGPoint)pt;
+- (void)translate:(CGPoint)pt;
 @end
