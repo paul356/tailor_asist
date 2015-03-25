@@ -53,6 +53,11 @@ enum ControlState {
         _controlState = DRAW_LINE;
     } else if ([barButton.title isEqualToString:@"Circle"]) {
         _controlState = DRAW_CIRCLE;
+    } else if ([barButton.title isEqualToString:@"Delete"]) {
+        if (_controlState == SELECT) {
+            [_tailorView discardSelectedCurve];
+            [_tailorView setNeedsDisplay];
+        }
     }
 }
 
@@ -98,6 +103,7 @@ enum ControlState {
         switch (_controlState) {
             case DRAW_LINE:
             case DRAW_CIRCLE:
+                [_tailorView deselect];
                 if (_controlState == DRAW_CIRCLE) {
                     [_tailorView setLineType:CIRCLE];
                 } else if (_controlState == DRAW_LINE) {

@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="z61-88-Erj">
-                                <rect key="frame" x="0.0" y="980" width="768" height="44"/>
+                                <rect key="frame" x="519" y="972" width="233" height="44"/>
                                 <items>
                                     <barButtonItem title="Cursor" id="7we-41-TIw">
                                         <connections>
@@ -32,6 +32,11 @@
                                     <barButtonItem title="Circle" id="Z5W-fP-O0Q">
                                         <connections>
                                             <action selector="setControlState:" destination="BYZ-38-t0r" id="cQM-is-1LR"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem title="Delete" id="Zzl-Rh-FtW">
+                                        <connections>
+                                            <action selector="setControlState:" destination="BYZ-38-t0r" id="Beb-P2-1f7"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>

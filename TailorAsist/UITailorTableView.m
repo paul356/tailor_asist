@@ -124,6 +124,22 @@
     _trans.x = _trans.y = 0;
 }
 
+- (void)deselect
+{
+    if (_selected) {
+        _selected = FALSE;
+        ActiveCurve* newCurve = [[ActiveCurve alloc] init];
+        [newCurve copyCurve:_currCurve];
+        [_curveSet addCurve:newCurve];
+    }
+}
+
+- (void)discardSelectedCurve
+{
+    if (_selected)
+        _selected = FALSE;
+}
+
 - (BOOL)hitTest:(CGPoint)pt
 {
     if (_selected) {

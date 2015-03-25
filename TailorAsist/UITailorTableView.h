@@ -21,4 +21,6 @@
 - (BOOL)hitTest:(CGPoint)pt;
 - (void)updateTranslation:(CGPoint)pt;
 - (void)endTranslation;
+- (void)deselect;
+- (void)discardSelectedCurve;
 @end
