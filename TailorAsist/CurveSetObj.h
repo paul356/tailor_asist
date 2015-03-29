@@ -11,7 +11,19 @@
 
 @interface CurveSetObj : NSObject
 - (instancetype)init;
-- (void)drawCurveSet:(CGContextRef)ctx color:(CGColorRef)co;
+- (void)setActiveCurveStartPoint:(CGPoint)pt;
+- (void)updateActiveCurveEndPoint:(CGPoint)pt;
+- (void)setActiveCurveEndPoint:(CGPoint)pt; // End point won't change
+- (void)setActiveLineType:(enum CurveType)type;
+
+- (void)updateActiveCurveTranslation:(CGPoint)pt;
+- (void)endActiveCurveTranslation;
+
+- (void)drawCurveSet:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco;
 - (void)addCurve:(ActiveCurve*)newCurve;
+
+- (BOOL)hitTest:(CGPoint)pt;
 - (ActiveCurve *)hitTestAndRemove:(CGPoint) pt;
+- (void)deselect;
+- (void)discardSelectedCurve;
 @end
