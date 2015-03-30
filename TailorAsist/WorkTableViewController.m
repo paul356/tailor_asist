@@ -71,12 +71,6 @@ enum ControlState {
     
     _tailorView = (UITailorTableView*)self.view;
     [_tailorView initViewResources:_curveSet];
-/*
-    view = [[UITailorTableView alloc] initWithFrame:self.window.bounds curveSetObj:_curveSet];
-    view.userInteractionEnabled = TRUE;
-    [self.scrollView addSubview:_tailorView];
-    self.scrollView.contentSize = self.scrollView.bounds.size;
- */
 	// Do any additional setup after loading the view, typically from a nib.
 }
 

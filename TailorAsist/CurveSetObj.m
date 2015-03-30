@@ -49,16 +49,29 @@
     [_curveArr addObject:newCurve];
 }
 
-- (ActiveCurve *)hitTestAndRemove:(CGPoint)pt
+- (ActiveCurve*)connectToAnotherCurve:(CGPoint)pt endPointType:(enum ControlPointType*)ptType
+{
+    ActiveCurve* hitCurve = nil;
+    enum ControlPointType endPtType = NONE;
+    for (ActiveCurve* curve in _curveArr) {
+        if ((endPtType = [curve hitControlPoint:pt endPointOnly:TRUE]) != NONE) {
+            hitCurve = curve;
+            *ptType  = endPtType;
+            break;
+        }
+    }
+    return hitCurve;
+}
+
+- (ActiveCurve*)findHitCurve:(CGPoint)pt
 {
     ActiveCurve* hitCurve = nil;
     for (ActiveCurve* curve in _curveArr) {
-        if ([curve hitControlPoint:pt]) {
+        if ([curve hitControlPoint:pt endPointOnly:FALSE] != NONE) {
             hitCurve = curve;
             break;
         }
     }
-    [_curveArr removeObject:hitCurve];
     return hitCurve;
 }
 
@@ -72,8 +85,9 @@
         _active = FALSE;
     }
     
-    ActiveCurve* hitCurve = [self hitTestAndRemove:pt];
+    ActiveCurve* hitCurve = [self findHitCurve:pt];
     if (hitCurve) {
+        [_curveArr removeObject:hitCurve];
         [_currCurve copyCurve:hitCurve];
         _trans.x = _trans.y = 0;
         _active = TRUE;
@@ -84,6 +98,18 @@
 
 - (void)setActiveCurveStartPoint:(CGPoint)pt
 {
+    enum ControlPointType ptType;
+    ActiveCurve* nearbyCurve = [self connectToAnotherCurve:pt endPointType:&ptType];
+    if (nearbyCurve) {
+        assert(ptType != TOP && ptType != NONE);
+        if (ptType == START) {
+            pt = nearbyCurve.start;
+        } else if (ptType == END) {
+            pt = nearbyCurve.end;
+        }
+        _currCurve.prevCurve = nearbyCurve;
+    }
+    
     _currCurve.start = _currCurve.end = pt;
     if (_currCurve.lineType == CIRCLE) {
         _currCurve.top = _currCurve.start;

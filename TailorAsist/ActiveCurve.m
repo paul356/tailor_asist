@@ -41,6 +41,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
 - (instancetype)init
 {
     self.lineType = LINE;
+    self.nextCurve = self.prevCurve = nil;
     return self;
 }
 
@@ -132,21 +133,20 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     }
 }
 
-- (BOOL)hitControlPoint:(CGPoint)pt
+- (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly
 {
-    if (self.lineType == LINE) {
-        if (calcDist(&self->_start, &pt) < TOUCH_POINT_SIZE ||
-            calcDist(&self->_end, &pt) < TOUCH_POINT_SIZE) {
-            return TRUE;
-        }
-    } else if (self.lineType == CIRCLE) {
-        if (calcDist(&self->_top, &pt) < TOUCH_POINT_SIZE ||
-            calcDist(&self->_start, &pt) < TOUCH_POINT_SIZE ||
-            calcDist(&self->_end, &pt) < TOUCH_POINT_SIZE) {
-            return TRUE;
-        }
+    if (calcDist(&self->_start, &pt) < TOUCH_POINT_SIZE) {
+        return START;
     }
-    return FALSE;
+    if (calcDist(&self->_end, &pt) < TOUCH_POINT_SIZE) {
+        return END;
+    }
+    if (self.lineType == CIRCLE &&
+        !endOnly &&
+        calcDist(&self->_top, &pt) < TOUCH_POINT_SIZE) {
+        return TOP;
+    }
+    return NONE;
 }
 
 - (void)translate:(CGPoint)pt

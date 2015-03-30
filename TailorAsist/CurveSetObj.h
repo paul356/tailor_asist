@@ -23,7 +23,6 @@
 - (void)addCurve:(ActiveCurve*)newCurve;
 
 - (BOOL)hitTest:(CGPoint)pt;
-- (ActiveCurve *)hitTestAndRemove:(CGPoint) pt;
 - (void)deselect;
 - (void)discardSelectedCurve;
 @end
