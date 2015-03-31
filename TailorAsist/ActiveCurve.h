@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define PI 3.1415926
-#define TOUCH_POINT_SIZE 3
+#define TOUCH_POINT_SIZE 6
 enum CurveType {
     LINE,
     CIRCLE,
@@ -41,4 +41,5 @@ double angleDiff(double ang1, double ang2);
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
 - (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly;
 - (void)translate:(CGPoint)pt;
+- (void)movePoint:(CGPoint)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur;
 @end

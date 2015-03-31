@@ -42,6 +42,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
 {
     self.lineType = LINE;
     self.nextCurve = self.prevCurve = nil;
+    self.start = self.end = CGPointMake(0, 0);
     return self;
 }
 
@@ -154,6 +155,75 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     self.start = CGPointMake(pt.x + self.start.x, pt.y + self.start.y);
     self.end   = CGPointMake(pt.x + self.end.x, pt.y + self.end.y);
     self.top   = CGPointMake(pt.x + self.top.x, pt.y + self.top.y);
+}
+
+- (void)movePoint:(CGPoint)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur
+{
+    switch (ptType) {
+        case START:
+            if (self.lineType == CIRCLE) {
+                CGFloat startTopDist = calcDist(&self->_start, &self->_top);
+                CGFloat startEndDist = calcDist(&self->_start, &self->_end);
+                CGPoint midPt;
+                midPt.x = (self.start.x + self.end.x)/2.0;
+                midPt.y = (self.start.y + self.end.y)/2.0;
+                CGFloat perpNorm = calcDist(&midPt, &self->_top);
+                CGFloat cosv = startEndDist/(2.0*startTopDist);
+                CGFloat sinv = perpNorm / startTopDist;
+                
+                self.start = CGPointMake(pt.x + self.start.x, pt.y + self.start.y);
+                
+                self.top = CGPointMake(cosv*(self.end.x - self.start.x) + sinv*(self.end.y - self.start.y), -sinv*(self.end.x - self.start.x) + cosv*(self.end.y - self.start.y));
+                self.top = CGPointMake(self.top.x / startEndDist * startTopDist + self.start.x, self.top.y / startEndDist * startTopDist + self.start.y);
+            } else {
+                self.start = CGPointMake(pt.x + self.start.x, pt.y + self.start.y);
+            }
+            
+            if (recur) {
+                if (self.prevCurve &&
+                    self.prevCurve.prevCurve == self) {
+                    [self.prevCurve movePoint:pt pointType:START recursive:FALSE];
+                } else if (self.prevCurve) {
+                    assert(self.prevCurve.nextCurve == self);
+                    [self.prevCurve movePoint:pt pointType:END recursive:FALSE];
+                }
+            }
+            break;
+        case END:
+            if (self.lineType == CIRCLE) {
+                CGFloat startTopDist = calcDist(&self->_start, &self->_top);
+                CGFloat startEndDist = calcDist(&self->_start, &self->_end);
+                CGPoint midPt;
+                midPt.x = (self.start.x + self.end.x)/2.0;
+                midPt.y = (self.start.y + self.end.y)/2.0;
+                CGFloat perpNorm = calcDist(&midPt, &self->_top);
+                CGFloat cosv = startEndDist/(2.0*startTopDist);
+                CGFloat sinv = perpNorm / startTopDist;
+                
+                self.end = CGPointMake(pt.x + self.end.x, pt.y + self.end.y);
+                
+                self.top = CGPointMake(cosv*(self.end.x - self.start.x) + sinv*(self.end.y - self.start.y), -sinv*(self.end.x - self.start.x) + cosv*(self.end.y - self.start.y));
+                self.top = CGPointMake(self.top.x / startEndDist * startTopDist + self.start.x, self.top.y / startEndDist * startTopDist + self.start.y);
+            } else {
+                self.end = CGPointMake(pt.x + self.end.x, pt.y + self.end.y);
+            }
+            if (recur) {
+                if (self.nextCurve &&
+                    self.nextCurve.nextCurve == self) {
+                    [self.nextCurve movePoint:pt pointType:END recursive:FALSE];
+                } else if (self.nextCurve) {
+                    assert(self.nextCurve.prevCurve == self);
+                    [self.nextCurve movePoint:pt pointType:START recursive:FALSE];
+                }
+            }
+            break;
+        case TOP:
+            // Need to change it according to math
+            self.top   = CGPointMake(pt.x + self.top.x, pt.y + self.top.y);
+            break;
+        default:
+            break;
+    }
 }
 
 @end
