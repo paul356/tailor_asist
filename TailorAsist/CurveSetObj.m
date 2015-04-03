@@ -161,20 +161,6 @@
 
 - (void)updateActiveCurveEndPoint:(CGPoint)pt
 {
-    enum ControlPointType ptType;
-    ActiveCurve* nearbyCurve = [self connectToAnotherCurve:pt endPointType:&ptType];
-    if (nearbyCurve) {
-        assert(ptType != TOP && ptType != NONE);
-        if (ptType == START) {
-            pt = nearbyCurve.start;
-            nearbyCurve.prevCurve = _currCurve;
-        } else if (ptType == END) {
-            pt = nearbyCurve.end;
-            nearbyCurve.nextCurve = _currCurve;
-        }
-        _currCurve.nextCurve = nearbyCurve;
-    }
-    
     _currCurve.end = pt;
     if (_currCurve.lineType == CIRCLE) {
         double x = _currCurve.end.x - _currCurve.start.x;
@@ -194,6 +180,21 @@
 - (void)setActiveCurveEndPoint:(CGPoint)pt
 {
     NSLog(@"Add curve start=(%f %f), top=(%f, %f), end=(%f, %f)\n", _currCurve.start.x, _currCurve.start.y, _currCurve.top.x, _currCurve.top.y, _currCurve.end.x, _currCurve.end.y);
+    enum ControlPointType ptType;
+    ActiveCurve* nearbyCurve = [self connectToAnotherCurve:pt endPointType:&ptType];
+    if (nearbyCurve) {
+        assert(ptType != TOP && ptType != NONE);
+        if (ptType == START) {
+            pt = nearbyCurve.start;
+            nearbyCurve.prevCurve = _currCurve;
+        } else if (ptType == END) {
+            pt = nearbyCurve.end;
+            nearbyCurve.nextCurve = _currCurve;
+        }
+        _currCurve.nextCurve = nearbyCurve;
+    }
+    [self updateActiveCurveEndPoint:pt];
+    
     [self addCurve:_currCurve];
     ActiveCurve* newCurve = [[ActiveCurve alloc] init];
     _currCurve = newCurve;
@@ -211,7 +212,49 @@
 {
     if (_activePoint == START ||
         _activePoint == END) {
+        CGPoint newPt;
+        BOOL lonePoint;
+        if (_activePoint == START) {
+            newPt = CGPointMake(_currCurve.start.x + _trans.x, _currCurve.start.y + _trans.y);
+            lonePoint = _currCurve.prevCurve == nil;
+        } else {
+            newPt = CGPointMake(_currCurve.end.x + _trans.x, _currCurve.end.y + _trans.y);
+            lonePoint = _currCurve.nextCurve == nil;
+            assert(_activePoint == END);
+        }
+        
+        ActiveCurve* nearbyCurve = nil;
+        if (lonePoint) {
+            enum ControlPointType ptType = NONE;
+            nearbyCurve = [self connectToAnotherCurve:newPt endPointType:&ptType];
+            if (nearbyCurve) {
+                assert(ptType != NONE && ptType != TOP);
+                if (ptType == START) {
+                    newPt = nearbyCurve.start;
+                    nearbyCurve.prevCurve = _currCurve;
+                } else if (ptType == END) {
+                    newPt = nearbyCurve.end;
+                    nearbyCurve.nextCurve = _currCurve;
+                }
+                
+                if (_activePoint == START) {
+                    _trans = CGPointMake(newPt.x - _currCurve.start.x, newPt.y - _currCurve.start.y);
+                } else {
+                    _trans = CGPointMake(newPt.x - _currCurve.end.x, newPt.y - _currCurve.end.y);
+                }
+            }
+        }
+        
         [_currCurve movePoint:_trans pointType:_activePoint recursive:TRUE];
+        
+        if (nearbyCurve) {
+            if (_activePoint == START) {
+                _currCurve.prevCurve = nearbyCurve;
+            } else {
+                assert(_activePoint == END);
+                _currCurve.nextCurve = nearbyCurve;
+            }
+        }
     } else {
         [_currCurve translate:_trans];
     }
