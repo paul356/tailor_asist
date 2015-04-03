@@ -161,6 +161,20 @@
 
 - (void)updateActiveCurveEndPoint:(CGPoint)pt
 {
+    enum ControlPointType ptType;
+    ActiveCurve* nearbyCurve = [self connectToAnotherCurve:pt endPointType:&ptType];
+    if (nearbyCurve) {
+        assert(ptType != TOP && ptType != NONE);
+        if (ptType == START) {
+            pt = nearbyCurve.start;
+            nearbyCurve.prevCurve = _currCurve;
+        } else if (ptType == END) {
+            pt = nearbyCurve.end;
+            nearbyCurve.nextCurve = _currCurve;
+        }
+        _currCurve.nextCurve = nearbyCurve;
+    }
+    
     _currCurve.end = pt;
     if (_currCurve.lineType == CIRCLE) {
         double x = _currCurve.end.x - _currCurve.start.x;
