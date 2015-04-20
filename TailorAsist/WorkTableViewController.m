@@ -36,12 +36,12 @@ enum ControlState {
 };
 
 @interface WorkTableViewController () {
-    UITailorTableView* _tailorView;
     CurveSetObj *_curveSet;
     enum ControlState _controlState;
     CGPoint _startPt;
     BOOL _objectSelected;
 }
+@property (weak, nonatomic) IBOutlet UITailorTableView *tailorView;
 @end
 
 @implementation WorkTableViewController
@@ -69,7 +69,6 @@ enum ControlState {
     _controlState = DRAW_LINE;
     _objectSelected = FALSE;
     
-    _tailorView = (UITailorTableView*)self.view;
     [_tailorView initViewResources:_curveSet];
 	// Do any additional setup after loading the view, typically from a nib.
 }

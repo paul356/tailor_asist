@@ -10,6 +10,7 @@
 
 #define PI 3.1415926
 #define TOUCH_POINT_SIZE 6
+#define MIN_CURVE_LENGTH 2
 enum CurveType {
     LINE,
     CIRCLE,
@@ -32,6 +33,7 @@ double angleDiff(double ang1, double ang2);
 @property (nonatomic) enum CurveType lineType;
 @property (nonatomic) CGPoint start;
 @property (nonatomic) CGPoint end;
+@property (nonatomic) CGFloat fixedDist;
 // The circle is draw clock-wise
 @property (nonatomic) CGPoint top;
 @property (nonatomic) ActiveCurve* prevCurve;
@@ -41,5 +43,5 @@ double angleDiff(double ang1, double ang2);
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
 - (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly;
 - (void)translate:(CGPoint)pt;
-- (void)movePoint:(CGPoint)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur;
+- (void)movePoint:(CGPoint*)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur;
 @end

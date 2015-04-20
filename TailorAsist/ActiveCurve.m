@@ -41,6 +41,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
 - (instancetype)init
 {
     self.lineType = LINE;
+    self.fixedDist = 0.0;
     self.nextCurve = self.prevCurve = nil;
     self.start = self.end = CGPointMake(0, 0);
     return self;
@@ -52,6 +53,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     self.start    = curve.start;
     self.end      = curve.end;
     self.top      = curve.top;
+    self.fixedDist = curve.fixedDist;
 }
 
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
@@ -157,10 +159,30 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     self.top   = CGPointMake(pt.x + self.top.x, pt.y + self.top.y);
 }
 
-- (void)movePoint:(CGPoint)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur
+- (void)movePoint:(CGPoint*)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur
 {
+    CGPoint newPt = *pt;
     switch (ptType) {
         case START:
+            if (self.fixedDist && self.prevCurve && self.prevCurve.fixedDist) {
+                pt->x = pt->y = 0;
+                break;
+            }
+            if (recur && self.prevCurve && self.prevCurve.fixedDist) {
+                if (self.prevCurve.prevCurve == self) {
+                    [self.prevCurve movePoint:&newPt pointType:START recursive:FALSE];
+                } else {
+                    assert(self.prevCurve.nextCurve == self);
+                    [self.prevCurve movePoint:&newPt pointType:END recursive:FALSE];
+                }
+            } else if (self.fixedDist) {
+                CGPoint fakePt;
+                fakePt.x = pt->x + self.start.x;
+                fakePt.y = pt->y + self.start.y;
+                CGFloat fakeLen = calcDist(&fakePt, &self->_end);
+                newPt.x = (fakePt.x - self.end.x)*self.fixedDist/fakeLen + self.end.x - self.start.x;
+                newPt.y = (fakePt.y - self.end.y)*self.fixedDist/fakeLen + self.end.y - self.start.y;
+            }
             if (self.lineType == CIRCLE) {
                 CGFloat startTopDist = calcDist(&self->_start, &self->_top);
                 CGFloat startEndDist = calcDist(&self->_start, &self->_end);
@@ -171,25 +193,44 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
                 CGFloat cosv = startEndDist/(2.0*startTopDist);
                 CGFloat sinv = perpNorm / startTopDist;
                 
-                self.start = CGPointMake(pt.x + self.start.x, pt.y + self.start.y);
+                self.start = CGPointMake(newPt.x + self.start.x, newPt.y + self.start.y);
                 
                 self.top = CGPointMake(cosv*(self.end.x - self.start.x) + sinv*(self.end.y - self.start.y), -sinv*(self.end.x - self.start.x) + cosv*(self.end.y - self.start.y));
                 self.top = CGPointMake(self.top.x / startEndDist * startTopDist + self.start.x, self.top.y / startEndDist * startTopDist + self.start.y);
             } else {
-                self.start = CGPointMake(pt.x + self.start.x, pt.y + self.start.y);
+                self.start = CGPointMake(newPt.x + self.start.x, newPt.y + self.start.y);
             }
             
-            if (recur) {
-                if (self.prevCurve &&
-                    self.prevCurve.prevCurve == self) {
-                    [self.prevCurve movePoint:pt pointType:START recursive:FALSE];
-                } else if (self.prevCurve) {
+            if (recur && self.prevCurve && !self.prevCurve.fixedDist) {
+                if (self.prevCurve.prevCurve == self) {
+                    [self.prevCurve movePoint:&newPt pointType:START recursive:FALSE];
+                } else {
                     assert(self.prevCurve.nextCurve == self);
-                    [self.prevCurve movePoint:pt pointType:END recursive:FALSE];
+                    [self.prevCurve movePoint:&newPt pointType:END recursive:FALSE];
                 }
             }
+            *pt = newPt;
             break;
         case END:
+            if (self.fixedDist && self.nextCurve && self.nextCurve.fixedDist) {
+                pt->x = pt->x = 0;
+                break;
+            }
+            if (recur && self.nextCurve && self.nextCurve.fixedDist) {
+                if (self.nextCurve.nextCurve == self) {
+                    [self movePoint:&newPt pointType:END recursive:FALSE];
+                } else {
+                    assert(self.nextCurve.prevCurve == self);
+                    [self movePoint:&newPt pointType:START recursive:FALSE];
+                }
+            } else if (self.fixedDist) {
+                CGPoint fakePt;
+                fakePt.x = pt->x + self.end.x;
+                fakePt.y = pt->y + self.end.y;
+                CGFloat fakeLen = calcDist(&fakePt, &self->_start);
+                newPt.x = (fakePt.x - self.start.x)*self.fixedDist/fakeLen + self.start.x - self.end.x;
+                newPt.y = (fakePt.y - self.start.y)*self.fixedDist/fakeLen + self.start.y - self.end.y;
+            }
             if (self.lineType == CIRCLE) {
                 CGFloat startTopDist = calcDist(&self->_start, &self->_top);
                 CGFloat startEndDist = calcDist(&self->_start, &self->_end);
@@ -200,26 +241,26 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
                 CGFloat cosv = startEndDist/(2.0*startTopDist);
                 CGFloat sinv = perpNorm / startTopDist;
                 
-                self.end = CGPointMake(pt.x + self.end.x, pt.y + self.end.y);
+                self.end = CGPointMake(newPt.x + self.end.x, newPt.y + self.end.y);
                 
                 self.top = CGPointMake(cosv*(self.end.x - self.start.x) + sinv*(self.end.y - self.start.y), -sinv*(self.end.x - self.start.x) + cosv*(self.end.y - self.start.y));
                 self.top = CGPointMake(self.top.x / startEndDist * startTopDist + self.start.x, self.top.y / startEndDist * startTopDist + self.start.y);
             } else {
-                self.end = CGPointMake(pt.x + self.end.x, pt.y + self.end.y);
+                self.end = CGPointMake(newPt.x + self.end.x, newPt.y + self.end.y);
             }
-            if (recur) {
-                if (self.nextCurve &&
-                    self.nextCurve.nextCurve == self) {
-                    [self.nextCurve movePoint:pt pointType:END recursive:FALSE];
-                } else if (self.nextCurve) {
+            if (recur && self.nextCurve && !self.nextCurve.fixedDist) {
+                if (self.nextCurve.nextCurve == self) {
+                    [self.nextCurve movePoint:&newPt pointType:END recursive:FALSE];
+                } else {
                     assert(self.nextCurve.prevCurve == self);
-                    [self.nextCurve movePoint:pt pointType:START recursive:FALSE];
+                    [self.nextCurve movePoint:&newPt pointType:START recursive:FALSE];
                 }
             }
+            *pt = newPt;
             break;
         case TOP:
             // Need to change it according to math
-            self.top   = CGPointMake(pt.x + self.top.x, pt.y + self.top.y);
+            self.top   = CGPointMake(pt->x + self.top.x, pt->y + self.top.y);
             break;
         default:
             break;

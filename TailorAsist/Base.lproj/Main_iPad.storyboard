@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1510" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Work Table View Controller-->
@@ -12,38 +13,60 @@
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="UITailorTableView">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="z61-88-Erj">
-                                <rect key="frame" x="519" y="972" width="233" height="44"/>
-                                <items>
-                                    <barButtonItem title="Cursor" id="7we-41-TIw">
-                                        <connections>
-                                            <action selector="setControlState:" destination="BYZ-38-t0r" id="5MI-0e-Ryo"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem title="Line" id="cOC-nZ-dmu">
-                                        <connections>
-                                            <action selector="setControlState:" destination="BYZ-38-t0r" id="qVl-6R-1eB"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem title="Circle" id="Z5W-fP-O0Q">
-                                        <connections>
-                                            <action selector="setControlState:" destination="BYZ-38-t0r" id="cQM-is-1LR"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem title="Delete" id="Zzl-Rh-FtW">
-                                        <connections>
-                                            <action selector="setControlState:" destination="BYZ-38-t0r" id="Beb-P2-1f7"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JHe-LS-Y3v" customClass="UITailorTableView">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <subviews>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z61-88-Erj">
+                                        <rect key="frame" x="527" y="972" width="233" height="44"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="233" id="EJJ-2U-SY3"/>
+                                        </constraints>
+                                        <items>
+                                            <barButtonItem title="Cursor" id="7we-41-TIw">
+                                                <connections>
+                                                    <action selector="setControlState:" destination="BYZ-38-t0r" id="5MI-0e-Ryo"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem title="Line" width="40" id="cOC-nZ-dmu">
+                                                <connections>
+                                                    <action selector="setControlState:" destination="BYZ-38-t0r" id="qVl-6R-1eB"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem title="Circle" id="Z5W-fP-O0Q">
+                                                <connections>
+                                                    <action selector="setControlState:" destination="BYZ-38-t0r" id="cQM-is-1LR"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem title="Delete" id="Zzl-Rh-FtW">
+                                                <connections>
+                                                    <action selector="setControlState:" destination="BYZ-38-t0r" id="Beb-P2-1f7"/>
+                                                </connections>
+                                            </barButtonItem>
+                                        </items>
+                                    </toolbar>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="z61-88-Erj" firstAttribute="bottom" secondItem="JHe-LS-Y3v" secondAttribute="bottomMargin" id="TF2-G3-qh6"/>
+                                    <constraint firstItem="z61-88-Erj" firstAttribute="trailing" secondItem="JHe-LS-Y3v" secondAttribute="trailingMargin" id="Wer-48-92N"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="QTV-sW-0in"/>
+                            <constraint firstAttribute="trailing" secondItem="JHe-LS-Y3v" secondAttribute="trailing" id="cjP-mm-abr"/>
+                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="iTD-ft-T57"/>
+                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="wZU-8t-0tX"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="tailorView" destination="JHe-LS-Y3v" id="M7F-zF-rcA"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
