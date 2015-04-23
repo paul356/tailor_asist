@@ -259,9 +259,49 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
             *pt = newPt;
             break;
         case TOP:
-            // Need to change it according to math
-            self.top   = CGPointMake(pt->x + self.top.x, pt->y + self.top.y);
+        {
+            ActiveCurve* prev = self.prevCurve;
+            ActiveCurve* next = self.nextCurve;
+            if (recur) {
+                if (prev && prev.fixedDist && next && next.fixedDist) {
+                    pt->x = pt->y = 0;
+                    break;
+                } else if (prev && prev.fixedDist) {
+                    if (prev.prevCurve == self) {
+                        [prev movePoint:&newPt pointType:START recursive:NO];
+                    } else {
+                        [prev movePoint:&newPt pointType:END recursive:NO];
+                    }
+                } else if (next && next.fixedDist) {
+                    if (next.prevCurve == self) {
+                        [next movePoint:&newPt pointType:START recursive:NO];
+                    } else {
+                        [next movePoint:&newPt pointType:END recursive:NO];
+                    }
+                }
+            }
+            
+            [self translate:newPt];
+            
+            if (recur) {
+                if (prev && !prev.fixedDist) {
+                    if (prev.prevCurve == self) {
+                        [prev movePoint:&newPt pointType:START recursive:NO];
+                    } else {
+                        [prev movePoint:&newPt pointType:END recursive:NO];
+                    }
+                }
+                if (next && !next.fixedDist) {
+                    if (next.prevCurve == self) {
+                        [next movePoint:&newPt pointType:START recursive:NO];
+                    } else {
+                        [next movePoint:&newPt pointType:END recursive:NO];
+                    }
+                }
+            }
+            *pt = newPt;
             break;
+        }
         default:
             break;
     }

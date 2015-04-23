@@ -33,68 +33,113 @@
     if (_active) {
         ActiveCurve *curve = nil;
         ActiveCurve *next  = nil;
+        ActiveCurve *nextToDraw = nil;
         ActiveCurve *prev  = nil;
+        ActiveCurve *prevToDraw = nil;
         CGPoint savedTrans = _trans;
         if (savedTrans.x || savedTrans.y) {
-            curve = [[ActiveCurve alloc] init];
-            [curve copyCurve:_currCurve];
-            curve.nextCurve = curve.prevCurve = nil;
-            if (_activePoint == START ||
-                _activePoint == END) {
-                [curve movePoint:&savedTrans pointType:_activePoint recursive:FALSE];
-                next = _currCurve.nextCurve;
+            if (_activePoint == START) {
                 prev = _currCurve.prevCurve;
+                if (prev && prev.fixedDist && _currCurve.fixedDist) {
+                    savedTrans.x = savedTrans.y = 0;
+                }
+            } else if (_activePoint == END) {
+                next = _currCurve.nextCurve;
+                if (next && next.fixedDist && _currCurve.fixedDist) {
+                    savedTrans.x = savedTrans.y = 0;
+                }
             } else {
-                // TODO: need to handle two neighbour curves
-                [curve translate:savedTrans];
+                prev = _currCurve.prevCurve;
+                next = _currCurve.nextCurve;
+                if (next && next.fixedDist && prev && prev.fixedDist) {
+                    savedTrans.x = savedTrans.y = 0;
+                }
+            }
+            if (savedTrans.x || savedTrans.y) {
+                if (_activePoint == START ||
+                    _activePoint == END) {
+                    if (prev && prev.fixedDist) {
+                        prevToDraw = [[ActiveCurve alloc] init];
+                        [prevToDraw copyCurve:prev];
+                        if (prevToDraw.prevCurve == _currCurve) {
+                            [prevToDraw movePoint:&savedTrans pointType:START recursive:NO];
+                        } else {
+                            [prevToDraw movePoint:&savedTrans pointType:END recursive:NO];
+                        }
+                    } else if (_currCurve.fixedDist) {
+                        curve = [[ActiveCurve alloc] init];
+                        [curve copyCurve:_currCurve];
+                        [curve movePoint:&savedTrans pointType:_activePoint recursive:NO];
+                    } else if (next && next.fixedDist) {
+                        nextToDraw = [[ActiveCurve alloc] init];
+                        [nextToDraw copyCurve:next];
+                        if (nextToDraw.prevCurve == _currCurve) {
+                            [nextToDraw movePoint:&savedTrans pointType:START recursive:NO];
+                        } else {
+                            [nextToDraw movePoint:&savedTrans pointType:END recursive:NO];
+                        }
+                    }
+                } else {
+                    if (prev && prev.fixedDist) {
+                        prevToDraw = [[ActiveCurve alloc] init];
+                        [prevToDraw copyCurve:prev];
+                        if (prevToDraw.prevCurve == _currCurve) {
+                            [prevToDraw movePoint:&savedTrans pointType:START recursive:NO];
+                        } else {
+                            [prevToDraw movePoint:&savedTrans pointType:END recursive:NO];
+                        }
+                    } else if (next && next.fixedDist) {
+                        nextToDraw = [[ActiveCurve alloc] init];
+                        [nextToDraw copyCurve:next];
+                        if (nextToDraw.prevCurve == _currCurve) {
+                            [nextToDraw movePoint:&savedTrans pointType:START recursive:NO];
+                        } else {
+                            [nextToDraw movePoint:&savedTrans pointType:END recursive:NO];
+                        }
+                    }
+                }
+                
+                if (!curve) {
+                    if (_activePoint == TOP) {
+                        curve = [[ActiveCurve alloc] init];
+                        [curve copyCurve:_currCurve];
+                        [curve translate:savedTrans];
+                    } else {
+                        curve = [[ActiveCurve alloc] init];
+                        [curve copyCurve:_currCurve];
+                        [curve movePoint:&savedTrans pointType:_activePoint recursive:NO];
+                    }
+                }
+            } else {
+                curve = _currCurve;
+            }
+
+            if (next && !nextToDraw) {
+                nextToDraw = [[ActiveCurve alloc] init];
+                [nextToDraw copyCurve:next];
+                if (next.prevCurve == _currCurve) {
+                    [nextToDraw movePoint:&savedTrans pointType:START recursive:FALSE];
+                } else {
+                    [nextToDraw movePoint:&savedTrans pointType:END recursive:FALSE];
+                }
+            }
+            if (prev && !prevToDraw) {
+                prevToDraw = [[ActiveCurve alloc] init];
+                [prevToDraw copyCurve:prev];
+                if (prev.prevCurve == _currCurve) {
+                    [prevToDraw movePoint:&savedTrans pointType:START recursive:FALSE];
+                } else {
+                    [prevToDraw movePoint:&savedTrans pointType:END recursive:FALSE];
+                }
             }
         } else {
             curve = _currCurve;
         }
-
-        BOOL currCurveChanged = NO;
-        if (savedTrans.x != _trans.x || savedTrans.y != _trans.y) {
-            currCurveChanged = YES;
-        }
         
-        ActiveCurve* nearbyCurve = nil;
-        CGPoint savedTrans1 = savedTrans;
-        if (next && _activePoint == END) {
-            nearbyCurve = [[ActiveCurve alloc] init];
-            [nearbyCurve copyCurve:next];
-            nearbyCurve.nextCurve = nearbyCurve.prevCurve = nil;
-            if (next.prevCurve == _currCurve) {
-                [nearbyCurve movePoint:&savedTrans1 pointType:START recursive:FALSE];
-            } else {
-                [nearbyCurve movePoint:&savedTrans1 pointType:END recursive:FALSE];
-            }
-        }
-        if (prev && _activePoint == START) {
-            nearbyCurve = [[ActiveCurve alloc] init];
-            [nearbyCurve copyCurve:prev];
-            nearbyCurve.nextCurve = nearbyCurve.prevCurve = nil;
-            if (prev.prevCurve == _currCurve) {
-                [nearbyCurve movePoint:&savedTrans1 pointType:START recursive:FALSE];
-            } else {
-                [nearbyCurve movePoint:&savedTrans1 pointType:END recursive:FALSE];
-            }
-        }
-        
-        BOOL nearbyCurveChanged = NO;
-        if (savedTrans1.x != savedTrans.x || savedTrans1.y != savedTrans.y) {
-            nearbyCurveChanged = YES;
-        }
-        
-        if (nearbyCurveChanged && currCurveChanged) {
-            [curve copyCurve:_currCurve];
-            [nearbyCurve copyCurve:_activePoint == START ? prev : next];
-        } else if (nearbyCurveChanged && !currCurveChanged) {
-            [curve copyCurve:_currCurve];
-            [curve movePoint:&savedTrans1 pointType:_activePoint recursive:FALSE];
-        }
         [_currCurve drawCurve:ctx color:co];
         [curve drawCurve:ctx color:aco];
-        [nearbyCurve drawCurve:ctx color:aco];
+        [prevToDraw drawCurve:ctx color:aco];
+        [nextToDraw drawCurve:ctx color:aco];
     }
 }
 
@@ -150,12 +195,12 @@
     if (hitCurve) {
         [_curveArr removeObject:hitCurve];
         _currCurve = hitCurve;
-        
+/*
         // TODO: simulate fixed length curve
         CGPoint st = _currCurve.start;
         CGPoint ed = _currCurve.end;
         _currCurve.fixedDist = calcDist(&st, &ed);
-        
+  */
         _trans.x = _trans.y = 0;
         _activePoint = ptType;
         _active = TRUE;
@@ -264,9 +309,7 @@
         }
         
         if (!lonePoint) {
-            _trans.x = _trans.y = 0;
-            _activePoint = NONE;
-            return;
+            goto out;
         }
         
         if (_activePoint == START) {
@@ -318,9 +361,124 @@
             }
         }
     } else {
-        [_currCurve translate:_trans];
+        CGPoint savedTrans = _trans;
+        ActiveCurve* prev = _currCurve.prevCurve;
+        ActiveCurve* next = _currCurve.nextCurve;
+        BOOL prevOrNextFixed = NO;
+        if (prev && prev.fixedDist &&
+            next && next.fixedDist) {
+            savedTrans.x = savedTrans.y = 0;
+            goto out;
+        } else if ((prev && prev.fixedDist) ||
+                   (next && next.fixedDist) ||
+                   (next && prev)) {
+            [_currCurve movePoint:&savedTrans pointType:_activePoint recursive:YES];
+            prevOrNextFixed = (prev && prev.fixedDist) || (next && next.fixedDist);
+        }
+        
+        if (next && prev) {
+            goto out;
+        }
+        
+        ActiveCurve *startNearby = nil;
+        enum ControlPointType startPtType = NONE;
+        ActiveCurve *endNearby   = nil;
+        enum ControlPointType endPtType = NONE;
+        CGPoint startGuess = CGPointMake(savedTrans.x + _currCurve.start.x, savedTrans.y + _currCurve.start.y);
+        if (!prev) {
+            startNearby = [self connectToAnotherCurve:startGuess
+                                         endPointType:&startPtType
+                                        fixedLenCurve:prevOrNextFixed];
+        }
+        CGPoint endGuess = CGPointMake(savedTrans.x + _currCurve.end.x, savedTrans.y + _currCurve.end.y);
+        if (!next) {
+            endNearby = [self connectToAnotherCurve:endGuess
+                                       endPointType:&endPtType
+                                      fixedLenCurve:prevOrNextFixed];
+        }
+        
+        if (prevOrNextFixed) {
+            if (startNearby) {
+                CGPoint ptDiff;
+                if (startPtType == START) {
+                    ptDiff = CGPointMake(startGuess.x - startNearby.start.x, startGuess.y - startNearby.start.y);
+                } else {
+                    ptDiff = CGPointMake(startGuess.x - startNearby.end.x, startGuess.y - startNearby.end.y);
+                }
+                [startNearby movePoint:&ptDiff pointType:startPtType recursive:NO];
+            }
+            if (endNearby) {
+                CGPoint ptDiff;
+                if (endPtType == START) {
+                    ptDiff = CGPointMake(endGuess.x - endNearby.start.x, endGuess.y - endNearby.start.y);
+                } else {
+                    ptDiff = CGPointMake(endGuess.x - endNearby.end.x, endGuess.y - endNearby.end.y);
+                }
+                [endNearby movePoint:&ptDiff pointType:endPtType recursive:NO];
+            }
+        } else {
+            // Treat startNearby having higher prority than endNearby
+            // This is for the ease of coding
+            if (startNearby) {
+                startGuess = startPtType == START ? startNearby.start : startNearby.end;
+                savedTrans.x = startGuess.x - _currCurve.start.x;
+                savedTrans.y = startGuess.y - _currCurve.start.y;
+            }
+            if (endNearby && !startNearby) {
+                endGuess = endPtType == START ? endNearby.start : endNearby.end;
+                savedTrans.x = endGuess.x - _currCurve.end.x;
+                savedTrans.y = endGuess.y - _currCurve.end.y;
+            } else if (endNearby && startNearby && !startNearby.fixedDist && endNearby.fixedDist) {
+                endGuess = endPtType == START ? endNearby.start : endNearby.end;
+                savedTrans.x = endGuess.x - _currCurve.end.x;
+                savedTrans.y = endGuess.y - _currCurve.end.y;
+                
+                startGuess = CGPointMake(_currCurve.start.x + savedTrans.x, _currCurve.start.y + savedTrans.y);
+                CGPoint ptDiff;
+                if (startPtType == START) {
+                    ptDiff = CGPointMake(startGuess.x - startNearby.start.x, startGuess.y - startNearby.start.y);
+                } else {
+                    ptDiff = CGPointMake(startGuess.x - startNearby.end.x, startGuess.y - startNearby.end.y);
+                }
+                [startNearby movePoint:&ptDiff pointType:startPtType recursive:NO];
+            } else if (endNearby && !endNearby.fixedDist) {
+                // startNearby is not nil in this case
+                endGuess = CGPointMake(_currCurve.end.x + savedTrans.x, _currCurve.end.y + savedTrans.y);
+                CGPoint ptDiff;
+                if (endPtType == START) {
+                    ptDiff = CGPointMake(endGuess.x - endNearby.start.x, endGuess.y - endNearby.start.y);
+                } else {
+                    ptDiff = CGPointMake(endGuess.x - endNearby.end.x, endGuess.y - endNearby.end.y);
+                }
+                [endNearby movePoint:&ptDiff pointType:endPtType recursive:NO];
+            } else {
+                endNearby = nil;
+            }
+            
+            [_currCurve translate:savedTrans];
+            [next movePoint:&savedTrans pointType:(next.prevCurve==_currCurve)?START:END recursive:NO];
+            [prev movePoint:&savedTrans pointType:(prev.prevCurve==_currCurve)?START:END recursive:NO];
+        }
+        
+        if (startNearby) {
+            if (startPtType == START) {
+                startNearby.prevCurve = _currCurve;
+            } else {
+                startNearby.nextCurve = _currCurve;
+            }
+            _currCurve.prevCurve = startNearby;
+        }
+        if (endNearby) {
+            if (endPtType == START) {
+                endNearby.prevCurve = _currCurve;
+            } else {
+                endNearby.nextCurve = _currCurve;
+            }
+            _currCurve.nextCurve = endNearby;
+        }
     }
-    
+
+    out:
     // reset translation to 0 for next move action
     _trans.x = _trans.y = 0;
     _activePoint = NONE;
