@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "ActiveCurve.h"
+#import "ActivePolygon.h"
 
-@interface CurveSetObj : NSObject
+@interface DataSetObj : NSObject
 - (instancetype)init;
 - (void)setActiveCurveStartPoint:(CGPoint)pt;
 - (void)updateActiveCurveEndPoint:(CGPoint)pt;
@@ -25,4 +26,6 @@
 - (BOOL)hitTest:(CGPoint)pt;
 - (void)deselect;
 - (void)discardSelectedCurve;
+
+- (void)addPolygon:(ActiveCurve*)start;
 @end

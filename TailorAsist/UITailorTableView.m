@@ -8,21 +8,21 @@
 
 #import "UITailorTableView.h"
 #import "ActiveCurve.h"
-#import "CurveSetObj.h"
+#import "DataSetObj.h"
 
 @interface UITailorTableView () {
-    CurveSetObj* _curveSet;
+    DataSetObj* _curveSet;
 }
 @end
 
 @implementation UITailorTableView
 
-- (void)initViewResources:(CurveSetObj*)curveSet
+- (void)initViewResources:(DataSetObj*)curveSet
 {
     _curveSet = curveSet;
 }
 
-- (void)setCurveSet:(CurveSetObj *)curveSet
+- (void)setCurveSet:(DataSetObj *)curveSet
 {
     _curveSet = curveSet;
 }

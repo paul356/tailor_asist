@@ -29,7 +29,12 @@ double calcAngle(CGPoint* startPt, CGPoint* endPt);
 double calcDist(CGPoint* startPt, CGPoint* endPt);
 double angleDiff(double ang1, double ang2);
 
-@interface ActiveCurve : NSObject
+@protocol DrawableShape <NSObject>
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
+- (void)translate:(CGPoint)pt;
+@end
+
+@interface ActiveCurve : NSObject<DrawableShape>
 @property (nonatomic) enum CurveType lineType;
 @property (nonatomic) CGPoint start;
 @property (nonatomic) CGPoint end;

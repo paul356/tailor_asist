@@ -9,7 +9,7 @@
 #import "WorkTableViewController.h"
 #import "UITailorTableView.h"
 #import "ActiveCurve.h"
-#import "CurveSetObj.h"
+#import "DataSetObj.h"
 #import "Matrix2D.h"
 
 const NSUInteger minLinePointNum = 16;
@@ -36,7 +36,7 @@ enum ControlState {
 };
 
 @interface WorkTableViewController () {
-    CurveSetObj *_curveSet;
+    DataSetObj *_curveSet;
     enum ControlState _controlState;
     CGPoint _startPt;
     BOOL _objectSelected;
@@ -65,7 +65,7 @@ enum ControlState {
 {
     [super viewDidLoad];
     
-    _curveSet = [[CurveSetObj alloc] init];
+    _curveSet = [[DataSetObj alloc] init];
     _controlState = DRAW_LINE;
     _objectSelected = FALSE;
     
