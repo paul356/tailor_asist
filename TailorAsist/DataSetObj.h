@@ -17,8 +17,8 @@
 - (void)setActiveCurveEndPoint:(CGPoint)pt; // End point won't change
 - (void)setActiveLineType:(enum CurveType)type;
 
-- (void)updateActiveCurveTranslation:(CGPoint)pt;
-- (void)endActiveCurveTranslation;
+- (void)updateShapeTranslation:(CGPoint)pt;
+- (void)endShapeTranslation;
 
 - (void)drawCurveSet:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco;
 - (void)addCurve:(ActiveCurve*)newCurve;

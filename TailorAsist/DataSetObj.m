@@ -8,13 +8,26 @@
 
 #import "DataSetObj.h"
 
+enum ActiveType {
+    EMPTY,
+    CURVE,
+    POLYGON
+};
+
+@interface DataSetObj ()
+- (void)drawActivePolygon:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco;
+- (void)drawActiveCurve:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco;
+- (void)endActiveCurveTranslation;
+@end
+
 @implementation DataSetObj {
     NSMutableArray* _curveArr;
     NSMutableArray* _polygonArr;
     ActiveCurve* _currCurve;
+    ActivePolygon* _currPolygon;
     CGPoint _trans;
     enum ControlPointType _activePoint;
-    BOOL _active;
+    enum ActiveType _activeType;
 }
 
 - (instancetype)init
@@ -22,6 +35,7 @@
     _curveArr  = [[NSMutableArray alloc] init];
     _polygonArr = [[NSMutableArray alloc] init];
     _currCurve = [[ActiveCurve alloc] init];
+    _currPolygon = nil;
     _trans.x = _trans.y = 0;
     _activePoint = NONE;
     return self;
@@ -57,20 +71,17 @@
             if (_activePoint == START ||
                 _activePoint == END) {
                 if (prev && prev.fixedDist) {
-                    prevToDraw = [[ActiveCurve alloc] init];
-                    [prevToDraw copyCurve:prev];
+                    prevToDraw = [prev copy];
                     if (prevToDraw.prevCurve == _currCurve) {
                         [prevToDraw movePoint:&savedTrans pointType:START recursive:NO];
                     } else {
                         [prevToDraw movePoint:&savedTrans pointType:END recursive:NO];
                     }
                 } else if (_currCurve.fixedDist) {
-                    curve = [[ActiveCurve alloc] init];
-                    [curve copyCurve:_currCurve];
+                    curve = [_currCurve copy];
                     [curve movePoint:&savedTrans pointType:_activePoint recursive:NO];
                 } else if (next && next.fixedDist) {
-                    nextToDraw = [[ActiveCurve alloc] init];
-                    [nextToDraw copyCurve:next];
+                    nextToDraw = [next copy];
                     if (nextToDraw.prevCurve == _currCurve) {
                         [nextToDraw movePoint:&savedTrans pointType:START recursive:NO];
                     } else {
@@ -79,16 +90,14 @@
                 }
             } else {
                 if (prev && prev.fixedDist) {
-                    prevToDraw = [[ActiveCurve alloc] init];
-                    [prevToDraw copyCurve:prev];
+                    prevToDraw = [prev copy];
                     if (prevToDraw.prevCurve == _currCurve) {
                         [prevToDraw movePoint:&savedTrans pointType:START recursive:NO];
                     } else {
                         [prevToDraw movePoint:&savedTrans pointType:END recursive:NO];
                     }
                 } else if (next && next.fixedDist) {
-                    nextToDraw = [[ActiveCurve alloc] init];
-                    [nextToDraw copyCurve:next];
+                    nextToDraw = [next copy];
                     if (nextToDraw.prevCurve == _currCurve) {
                         [nextToDraw movePoint:&savedTrans pointType:START recursive:NO];
                     } else {
@@ -99,12 +108,10 @@
             
             if (!curve) {
                 if (_activePoint == TOP) {
-                    curve = [[ActiveCurve alloc] init];
-                    [curve copyCurve:_currCurve];
+                    curve = [_currCurve copy];
                     [curve translate:savedTrans];
                 } else {
-                    curve = [[ActiveCurve alloc] init];
-                    [curve copyCurve:_currCurve];
+                    curve = [_currCurve copy];
                     [curve movePoint:&savedTrans pointType:_activePoint recursive:NO];
                 }
             }
@@ -113,8 +120,7 @@
         }
         
         if (next && !nextToDraw) {
-            nextToDraw = [[ActiveCurve alloc] init];
-            [nextToDraw copyCurve:next];
+            nextToDraw = [next copy];
             if (next.prevCurve == _currCurve) {
                 [nextToDraw movePoint:&savedTrans pointType:START recursive:FALSE];
             } else {
@@ -122,8 +128,7 @@
             }
         }
         if (prev && !prevToDraw) {
-            prevToDraw = [[ActiveCurve alloc] init];
-            [prevToDraw copyCurve:prev];
+            prevToDraw = [prev copy];
             if (prev.prevCurve == _currCurve) {
                 [prevToDraw movePoint:&savedTrans pointType:START recursive:FALSE];
             } else {
@@ -140,6 +145,17 @@
     [nextToDraw drawCurve:ctx color:aco];
 }
 
+- (void)drawActivePolygon:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco
+{
+    if (_trans.x || _trans.y) {
+        ActivePolygon* tmpPoly = [_currPolygon copy];
+        [tmpPoly translate:_trans];
+        [tmpPoly drawCurve:ctx color:aco];
+    } else {
+        [_currPolygon drawCurve:ctx color:aco];
+    }
+}
+
 - (void)drawCurveSet:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco
 {
     for (ActiveCurve* curve in _curveArr) {
@@ -148,12 +164,11 @@
     for (ActivePolygon* poly in _polygonArr) {
         [poly drawCurve:ctx color:co];
     }
-    if (_active) {
-        if ([_currCurve isKindOfClass:[ActiveCurve class]])
-            [self drawActiveCurve:ctx color:co activeColor:aco];
-        //else if ([_currCurve isKindOfClass:[ActivePolygon class]])
-            //[self drawPolygon:ctx color:co activeColor:aco];
-    }
+
+    if (_activeType == CURVE)
+        [self drawActiveCurve:ctx color:co activeColor:aco];
+    else if (_activeType == POLYGON)
+        [self drawActivePolygon:ctx color:co activeColor:aco];
 }
 
 - (void)addCurve:(ActiveCurve*)newCurve
@@ -193,14 +208,27 @@
     return hitCurve;
 }
 
+- (ActivePolygon*)findHitPolygon:(CGPoint)pt
+{
+    for (ActivePolygon* poly in _polygonArr) {
+        if ([poly pointInsideThisPolygon:pt]) {
+            return poly;
+        }
+    }
+    return nil;
+}
+
 - (BOOL)hitTest:(CGPoint)pt
 {
-    if (_active) {
-        [_currCurve translate:_trans];
+    if (_activeType == CURVE) {
+        assert(!_trans.x && !_trans.y);
         [self addCurve:_currCurve];
         ActiveCurve* tmpCurve = [[ActiveCurve alloc] init];
         _currCurve = tmpCurve;
-        _active = FALSE;
+        _activeType = EMPTY;
+    } else if (_activeType == POLYGON) {
+        _currPolygon = nil;
+        _activeType = EMPTY;
     }
     
     enum ControlPointType ptType = NONE;
@@ -208,18 +236,23 @@
     if (hitCurve) {
         [_curveArr removeObject:hitCurve];
         _currCurve = hitCurve;
-/*
-        // TODO: simulate fixed length curve
-        CGPoint st = _currCurve.start;
-        CGPoint ed = _currCurve.end;
-        _currCurve.fixedDist = calcDist(&st, &ed);
-  */
+
         _trans.x = _trans.y = 0;
         _activePoint = ptType;
-        _active = TRUE;
+        _activeType = CURVE;
+        return YES;
     }
     
-    return hitCurve != nil;
+    ActivePolygon* hitPolygon = [self findHitPolygon:pt];
+    if (hitPolygon) {
+        _currPolygon = hitPolygon;
+        _trans.x = _trans.y = 0;
+        _activePoint = NONE;
+        _activeType = POLYGON;
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (void)setActiveCurveStartPoint:(CGPoint)pt
@@ -242,7 +275,7 @@
     if (_currCurve.lineType == CIRCLE) {
         _currCurve.top = _currCurve.start;
     }
-    _active = TRUE;
+    _activeType = CURVE;
 }
 
 - (void)updateActiveCurveEndPoint:(CGPoint)pt
@@ -275,7 +308,7 @@
             }
         }
         _currCurve.prevCurve = nil;
-        _active = FALSE;
+        _activeType = EMPTY;
         return;
     }
     
@@ -297,17 +330,27 @@
     
     [self addCurve:_currCurve];
     if (_currCurve.nextCurve && _currCurve.prevCurve && [ActivePolygon isThisCurveInPolygon:_currCurve]) {
+        // If this curve forms a polygon
         [self addPolygon:_currCurve];
     }
     
-    ActiveCurve* newCurve = [[ActiveCurve alloc] init];
-    _currCurve = newCurve;
-    _active = FALSE;
+    _currCurve = [[ActiveCurve alloc] init];
+    _activeType = EMPTY;
 }
 
-- (void)updateActiveCurveTranslation:(CGPoint)pt
+- (void)updateShapeTranslation:(CGPoint)pt
 {
     _trans = pt;
+}
+
+- (void)endShapeTranslation
+{
+    if (_activeType == CURVE) {
+        [self endActiveCurveTranslation];
+    } else {
+        [_currPolygon translate:_trans];
+        _trans.x = _trans.y = 0;
+    }
 }
 
 - (void)endActiveCurveTranslation
@@ -506,7 +549,10 @@
     
     if (connectToNeighbor && _currCurve.nextCurve && _currCurve.prevCurve && [ActivePolygon isThisCurveInPolygon:_currCurve]) {
         [self addPolygon:_currCurve];
-        // TODO: update current to this polygon?
+        ActiveCurve* newCurve = [[ActiveCurve alloc] init];
+        _currCurve = newCurve;
+        _currPolygon = [_polygonArr lastObject];
+        _activeType = POLYGON;
     }
 
     out:
@@ -524,7 +570,10 @@
         if (iter.nextCurve == last && iter.prevCurve != last) {
             // align the sequence of preCurve and nextCurve in the nextCurve
             iter.nextCurve = iter.prevCurve;
-            iter.prevCurve = iter;
+            iter.prevCurve = last;
+            CGPoint tmp = iter.start;
+            iter.start = iter.end;
+            iter.end   = tmp;
         }
         
         [newPolygon addCurve:iter];
@@ -539,11 +588,14 @@
 
 - (void)deselect
 {
-    if (_active) {
+    if (_activeType == CURVE) {
         ActiveCurve* newCurve = [[ActiveCurve alloc] init];
         [self addCurve:_currCurve];
         _currCurve = newCurve;
-        _active = FALSE;
+        _activeType = EMPTY;
+    } else if (_activeType == POLYGON) {
+        _currPolygon = nil;
+        _activeType = EMPTY;
     }
 }
 
@@ -565,7 +617,7 @@
         }
         _currCurve.nextCurve = nil;
     }
-    _active = FALSE;
+    _activeType = EMPTY;
 }
 
 - (void)setActiveLineType:(enum CurveType)type

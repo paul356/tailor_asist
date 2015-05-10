@@ -14,7 +14,9 @@
 - (void)translate:(CGPoint)pt;
 
 - (instancetype)init;
+- (id)copy;
 - (void)addCurve:(ActiveCurve*)curve;
+- (BOOL)pointInsideThisPolygon:(CGPoint)pt;
 
 + (BOOL)isThisCurveInPolygon:(ActiveCurve*)start;
 @end

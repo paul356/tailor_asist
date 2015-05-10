@@ -47,13 +47,15 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     return self;
 }
 
-- (void)copyCurve:(ActiveCurve*)curve
+- (id)copy
 {
-    self.lineType = curve.lineType;
-    self.start    = curve.start;
-    self.end      = curve.end;
-    self.top      = curve.top;
-    self.fixedDist = curve.fixedDist;
+    ActiveCurve *curve = [[ActiveCurve alloc] init];
+    curve.lineType = self.lineType;
+    curve.start    = self.start;
+    curve.end      = self.end;
+    curve.top      = self.top;
+    curve.fixedDist = self.fixedDist;
+    return curve;
 }
 
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co

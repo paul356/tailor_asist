@@ -36,7 +36,7 @@ enum ControlState {
 };
 
 @interface WorkTableViewController () {
-    DataSetObj *_curveSet;
+    DataSetObj *_dataSet;
     enum ControlState _controlState;
     CGPoint _startPt;
     BOOL _objectSelected;
@@ -55,7 +55,7 @@ enum ControlState {
         _controlState = DRAW_CIRCLE;
     } else if ([barButton.title isEqualToString:@"Delete"]) {
         if (_controlState == SELECT) {
-            [_curveSet discardSelectedCurve];
+            [_dataSet discardSelectedCurve];
             [_tailorView setNeedsDisplay];
         }
     }
@@ -65,11 +65,11 @@ enum ControlState {
 {
     [super viewDidLoad];
     
-    _curveSet = [[DataSetObj alloc] init];
+    _dataSet = [[DataSetObj alloc] init];
     _controlState = DRAW_LINE;
     _objectSelected = FALSE;
     
-    [_tailorView initViewResources:_curveSet];
+    [_tailorView initViewResources:_dataSet];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -96,17 +96,17 @@ enum ControlState {
         switch (_controlState) {
             case DRAW_LINE:
             case DRAW_CIRCLE:
-                [_curveSet deselect];
+                [_dataSet deselect];
                 if (_controlState == DRAW_CIRCLE) {
-                    [_curveSet setActiveLineType:CIRCLE];
+                    [_dataSet setActiveLineType:CIRCLE];
                 } else if (_controlState == DRAW_LINE) {
-                    [_curveSet setActiveLineType:LINE];
+                    [_dataSet setActiveLineType:LINE];
                 }
-                [_curveSet setActiveCurveStartPoint:pt];
+                [_dataSet setActiveCurveStartPoint:pt];
                 [_tailorView setNeedsDisplay];
                 break;
             case SELECT:
-                if ([_curveSet hitTest:pt]) {
+                if ([_dataSet hitTest:pt]) {
                     _objectSelected = TRUE;
                     _startPt = pt;
                 }
@@ -125,12 +125,12 @@ enum ControlState {
         switch (_controlState) {
             case DRAW_CIRCLE:
             case DRAW_LINE:
-                [_curveSet updateActiveCurveEndPoint:pt];
+                [_dataSet updateActiveCurveEndPoint:pt];
                 [_tailorView setNeedsDisplay];
                 break;
             case SELECT:
                 if (_objectSelected) {
-                    [_curveSet updateActiveCurveTranslation:CGPointMake(pt.x - _startPt.x, pt.y - _startPt.y)];
+                    [_dataSet updateShapeTranslation:CGPointMake(pt.x - _startPt.x, pt.y - _startPt.y)];
                     [_tailorView setNeedsDisplay];
                     NSLog(@"Translate to %f %f\n", pt.x - _startPt.x, pt.y - _startPt.y);
                 }
@@ -148,12 +148,12 @@ enum ControlState {
         switch (_controlState) {
             case DRAW_LINE:
             case DRAW_CIRCLE:
-                [_curveSet setActiveCurveEndPoint:pt];
+                [_dataSet setActiveCurveEndPoint:pt];
                 [_tailorView setNeedsDisplay];
                 break;
             case SELECT:
                 if (_objectSelected) {
-                    [_curveSet endActiveCurveTranslation];
+                    [_dataSet endShapeTranslation];
                     _objectSelected = FALSE;
                     [_tailorView setNeedsDisplay];
                 }

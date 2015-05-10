@@ -44,7 +44,7 @@ double angleDiff(double ang1, double ang2);
 @property (nonatomic) ActiveCurve* prevCurve;
 @property (nonatomic) ActiveCurve* nextCurve;
 - (instancetype)init;
-- (void)copyCurve:(ActiveCurve*)curve;
+- (id)copy;
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
 - (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly;
 - (void)translate:(CGPoint)pt;
