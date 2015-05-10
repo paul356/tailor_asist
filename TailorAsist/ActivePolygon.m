@@ -10,6 +10,7 @@
 
 @interface ActivePolygon () {
     NSMutableArray* _curves;
+    BOOL _curveView;
 }
 @end
 
@@ -17,6 +18,7 @@
 - (instancetype)init
 {
     _curves = [[NSMutableArray alloc] init];
+    _curveView = NO;
     return self;
 }
 
@@ -32,44 +34,50 @@
 
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
 {
-    CGContextSetFillColorWithColor(ctx, co);
-    CGContextSetLineWidth(ctx, 1.0);
-    
-    BOOL firstCurve = YES;
-    CGContextBeginPath(ctx);
-    for (ActiveCurve* curve in _curves) {
-        if (firstCurve) {
-            CGContextMoveToPoint(ctx, curve.start.x, curve.start.y);
-            firstCurve = NO;
+    if (_curveView) {
+        for (ActiveCurve* curve in _curves) {
+            [curve drawCurve:ctx color:co];
         }
-        if (curve.lineType == CIRCLE) {
-            CGPoint perp;
-            perp.x = (2*curve.top.x - curve.start.x - curve.end.x)/2.0;
-            perp.y = (2*curve.top.y - curve.start.y - curve.end.y)/2.0;
-            
-            double perpNorm2 = perp.x * perp.x + perp.y * perp.y;
-            if (perpNorm2 < 0.5) {
-                return;
+    } else {
+        CGContextSetFillColorWithColor(ctx, co);
+        CGContextSetLineWidth(ctx, 1.0);
+        
+        BOOL firstCurve = YES;
+        CGContextBeginPath(ctx);
+        for (ActiveCurve* curve in _curves) {
+            if (firstCurve) {
+                CGContextMoveToPoint(ctx, curve.start.x, curve.start.y);
+                firstCurve = NO;
             }
-            
-            double perpNorm = sqrt(perpNorm2);
-            double radius = ((curve.end.x - curve.start.x)*(curve.end.x - curve.start.x) + (curve.end.y - curve.start.y)*(curve.end.y - curve.start.y))/(8*perpNorm) + perpNorm/2.0;
-            CGPoint center;
-            center.x = curve.top.x - perp.x*radius/perpNorm;
-            center.y = curve.top.y - perp.y*radius/perpNorm;
-            
-            CGPoint start = curve.start;
-            CGPoint end   = curve.end;
-            GLfloat startAngl = calcAngle(&center, &start);
-            GLfloat endAngl   = calcAngle(&center, &end);
-            
-            CGContextAddArc(ctx, center.x, center.y, radius, startAngl, endAngl, 0);
-        } else {
-            CGContextAddLineToPoint(ctx, curve.end.x, curve.end.y);
+            if (curve.lineType == CIRCLE) {
+                CGPoint perp;
+                perp.x = (2*curve.top.x - curve.start.x - curve.end.x)/2.0;
+                perp.y = (2*curve.top.y - curve.start.y - curve.end.y)/2.0;
+                
+                double perpNorm2 = perp.x * perp.x + perp.y * perp.y;
+                if (perpNorm2 < 0.5) {
+                    return;
+                }
+                
+                double perpNorm = sqrt(perpNorm2);
+                double radius = ((curve.end.x - curve.start.x)*(curve.end.x - curve.start.x) + (curve.end.y - curve.start.y)*(curve.end.y - curve.start.y))/(8*perpNorm) + perpNorm/2.0;
+                CGPoint center;
+                center.x = curve.top.x - perp.x*radius/perpNorm;
+                center.y = curve.top.y - perp.y*radius/perpNorm;
+                
+                CGPoint start = curve.start;
+                CGPoint end   = curve.end;
+                GLfloat startAngl = calcAngle(&center, &start);
+                GLfloat endAngl   = calcAngle(&center, &end);
+                
+                CGContextAddArc(ctx, center.x, center.y, radius, startAngl, endAngl, 0);
+            } else {
+                CGContextAddLineToPoint(ctx, curve.end.x, curve.end.y);
+            }
         }
+        CGContextFillPath(ctx);
+        CGContextStrokePath(ctx);
     }
-    CGContextFillPath(ctx);
-    CGContextStrokePath(ctx);
 }
 
 - (void)translate:(CGPoint)pt
