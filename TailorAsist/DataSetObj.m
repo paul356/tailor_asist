@@ -173,6 +173,7 @@ enum ActiveType {
 
 - (void)addCurve:(ActiveCurve*)newCurve
 {
+    NSLog(@"Add curve start=(%f %f), top=(%f, %f), end=(%f, %f)\n", newCurve.start.x, newCurve.start.y, newCurve.top.x, newCurve.top.y, newCurve.end.x, newCurve.end.y);
     [_curveArr addObject:newCurve];
 }
 
@@ -197,6 +198,13 @@ enum ActiveType {
 {
     ActiveCurve* hitCurve = nil;
     enum ControlPointType endPtType = NONE;
+    
+    endPtType = [_currCurve hitControlPoint:pt endPointOnly:FALSE];
+    if (endPtType != NONE) {
+        *ptType = endPtType;
+        return _currCurve;
+    }
+    
     for (ActiveCurve* curve in _curveArr) {
         if ((endPtType = [curve hitControlPoint:pt endPointOnly:FALSE]) != NONE) {
             hitCurve = curve;
@@ -204,7 +212,6 @@ enum ActiveType {
             break;
         }
     }
-    NSLog(@"findHitCurve endPoint:%d\n", endPtType);
     return hitCurve;
 }
 
@@ -220,23 +227,32 @@ enum ActiveType {
 
 - (BOOL)hitTest:(CGPoint)pt
 {
-    if (_activeType == CURVE) {
-        assert(!_trans.x && !_trans.y);
-        [self addCurve:_currCurve];
-        ActiveCurve* tmpCurve = [[ActiveCurve alloc] init];
-        _currCurve = tmpCurve;
-        _activeType = EMPTY;
-    } else if (_activeType == POLYGON) {
-        _currPolygon = nil;
-        _activeType = EMPTY;
-    }
-    
     enum ControlPointType ptType = NONE;
     ActiveCurve* hitCurve = [self findHitCurve:pt endPointType:&ptType];
-    if (hitCurve) {
+    if (hitCurve != _currCurve && _activeType == CURVE) {
+        assert(!_trans.x && !_trans.y);
+        [self addCurve:_currCurve];
+        _currCurve = nil;
+        _trans.x = _trans.y = 0;
+        if (!hitCurve) {
+            ActiveCurve* tmpCurve = [[ActiveCurve alloc] init];
+            _currCurve = tmpCurve;
+            _activeType = EMPTY;
+        } else {
+            [_curveArr removeObject:hitCurve];
+            _currCurve = hitCurve;
+            _activePoint = ptType;
+            _activeType = CURVE;
+            return YES;
+        }
+    } else if (hitCurve == _currCurve) {
+        assert(_activeType == CURVE);
+        _trans.x = _trans.y = 0;
+        _activePoint = ptType;
+        return YES;
+    } else if (hitCurve) {
         [_curveArr removeObject:hitCurve];
         _currCurve = hitCurve;
-
         _trans.x = _trans.y = 0;
         _activePoint = ptType;
         _activeType = CURVE;
@@ -245,11 +261,19 @@ enum ActiveType {
     
     ActivePolygon* hitPolygon = [self findHitPolygon:pt];
     if (hitPolygon) {
-        _currPolygon = hitPolygon;
-        _trans.x = _trans.y = 0;
-        _activePoint = NONE;
-        _activeType = POLYGON;
+        if (_currPolygon == hitPolygon) {
+            _currPolygon.curveView = !_currPolygon.curveView;
+        } else {
+            _currPolygon = hitPolygon;
+            _currPolygon.curveView = NO;
+            _trans.x = _trans.y = 0;
+            _activePoint = NONE;
+            _activeType = POLYGON;
+        }
         return YES;
+    } else {
+        _currPolygon = nil;
+        _activeType  = EMPTY;
     }
     
     return NO;
@@ -312,7 +336,6 @@ enum ActiveType {
         return;
     }
     
-    NSLog(@"Add curve start=(%f %f), top=(%f, %f), end=(%f, %f)\n", _currCurve.start.x, _currCurve.start.y, _currCurve.top.x, _currCurve.top.y, _currCurve.end.x, _currCurve.end.y);
     enum ControlPointType ptType;
     ActiveCurve* nearbyCurve = [self connectToAnotherCurve:pt endPointType:&ptType fixedLenCurve:NO];
     if (nearbyCurve) {

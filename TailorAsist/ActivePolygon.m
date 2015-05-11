@@ -10,7 +10,6 @@
 
 @interface ActivePolygon () {
     NSMutableArray* _curves;
-    BOOL _curveView;
 }
 @end
 
@@ -34,7 +33,7 @@
 
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
 {
-    if (_curveView) {
+    if (self.curveView) {
         for (ActiveCurve* curve in _curves) {
             [curve drawCurve:ctx color:co];
         }

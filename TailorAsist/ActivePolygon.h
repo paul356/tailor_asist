@@ -10,6 +10,8 @@
 #import "ActiveCurve.h"
 
 @interface ActivePolygon : NSObject <DrawableShape>
+@property (nonatomic) BOOL curveView;
+
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
 - (void)translate:(CGPoint)pt;
 
