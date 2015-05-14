@@ -148,9 +148,13 @@ enum ActiveType {
 - (void)drawActivePolygon:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco
 {
     if (_trans.x || _trans.y) {
-        ActivePolygon* tmpPoly = [_currPolygon copy];
-        [tmpPoly translate:_trans];
-        [tmpPoly drawCurve:ctx color:aco];
+        if (_currCurve) {
+            [self drawActiveCurve:ctx color:co activeColor:aco];
+        } else {
+            ActivePolygon* tmpPoly = [_currPolygon copy];
+            [tmpPoly translate:_trans];
+            [tmpPoly drawCurve:ctx color:aco];
+        }
     } else {
         [_currPolygon drawCurve:ctx color:aco];
     }
@@ -228,7 +232,7 @@ enum ActiveType {
 - (BOOL)hitTest:(CGPoint)pt
 {
     enum ControlPointType ptType = NONE;
-    if (_currPolygon) {
+    if (_currPolygon && _currPolygon.curveView) {
         ActiveCurve* hitCurve = [_currPolygon hitInnerCurve:pt endPointType:&ptType];
         if (hitCurve) {
             _currCurve = hitCurve;
@@ -271,6 +275,10 @@ enum ActiveType {
     if (hitPolygon) {
         if (_currPolygon == hitPolygon) {
             _currPolygon.curveView = !_currPolygon.curveView;
+            if (!_currPolygon.curveView) {
+                _currCurve = nil;
+                _activePoint = NONE;
+            }
         } else {
             _currPolygon = hitPolygon;
             _currPolygon.curveView = NO;
