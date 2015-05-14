@@ -107,6 +107,18 @@
     return oddNodes;
 }
 
+- (ActiveCurve*)hitInnerCurve:(CGPoint)pt endPointType:(enum ControlPointType*)ptType
+{
+    for (ActiveCurve* curve in _curves) {
+        enum ControlPointType ptype = [curve hitControlPoint:pt endPointOnly:NO];
+        if (ptype != NONE) {
+            *ptType = ptype;
+            return curve;
+        }
+    }
+    return nil;
+}
+
 + (BOOL)isThisCurveInPolygon:(ActiveCurve*)start
 {
     ActiveCurve* next = start.nextCurve;

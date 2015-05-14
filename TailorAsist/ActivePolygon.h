@@ -19,6 +19,7 @@
 - (id)copy;
 - (void)addCurve:(ActiveCurve*)curve;
 - (BOOL)pointInsideThisPolygon:(CGPoint)pt;
+- (ActiveCurve*)hitInnerCurve:(CGPoint)pt endPointType:(enum ControlPointType*)ptType;
 
 + (BOOL)isThisCurveInPolygon:(ActiveCurve*)start;
 @end

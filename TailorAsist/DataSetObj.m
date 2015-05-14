@@ -34,7 +34,7 @@ enum ActiveType {
 {
     _curveArr  = [[NSMutableArray alloc] init];
     _polygonArr = [[NSMutableArray alloc] init];
-    _currCurve = [[ActiveCurve alloc] init];
+    _currCurve = nil;
     _currPolygon = nil;
     _trans.x = _trans.y = 0;
     _activePoint = NONE;
@@ -228,15 +228,23 @@ enum ActiveType {
 - (BOOL)hitTest:(CGPoint)pt
 {
     enum ControlPointType ptType = NONE;
+    if (_currPolygon) {
+        ActiveCurve* hitCurve = [_currPolygon hitInnerCurve:pt endPointType:&ptType];
+        if (hitCurve) {
+            _currCurve = hitCurve;
+            _activePoint = ptType;
+            return YES;
+        }
+    }
+    
     ActiveCurve* hitCurve = [self findHitCurve:pt endPointType:&ptType];
     if (hitCurve != _currCurve && _activeType == CURVE) {
         assert(!_trans.x && !_trans.y);
         [self addCurve:_currCurve];
-        _currCurve = nil;
         _trans.x = _trans.y = 0;
         if (!hitCurve) {
-            ActiveCurve* tmpCurve = [[ActiveCurve alloc] init];
-            _currCurve = tmpCurve;
+            _currCurve = nil;
+            _activePoint = NONE;
             _activeType = EMPTY;
         } else {
             [_curveArr removeObject:hitCurve];
@@ -245,7 +253,7 @@ enum ActiveType {
             _activeType = CURVE;
             return YES;
         }
-    } else if (hitCurve == _currCurve) {
+    } else if (hitCurve == _currCurve && hitCurve) {
         assert(_activeType == CURVE);
         _trans.x = _trans.y = 0;
         _activePoint = ptType;
@@ -267,13 +275,19 @@ enum ActiveType {
             _currPolygon = hitPolygon;
             _currPolygon.curveView = NO;
             _trans.x = _trans.y = 0;
+            _currCurve = nil;
             _activePoint = NONE;
             _activeType = POLYGON;
         }
         return YES;
     } else {
-        _currPolygon = nil;
-        _activeType  = EMPTY;
+        if (_currPolygon) {
+            _currPolygon.curveView = NO;
+            _currPolygon = nil;
+            _currCurve = nil;
+            _activePoint = NONE;
+            _activeType  = EMPTY;
+        }
     }
     
     return NO;
@@ -357,7 +371,7 @@ enum ActiveType {
         [self addPolygon:_currCurve];
     }
     
-    _currCurve = [[ActiveCurve alloc] init];
+    _currCurve = nil;
     _activeType = EMPTY;
 }
 
@@ -368,7 +382,7 @@ enum ActiveType {
 
 - (void)endShapeTranslation
 {
-    if (_activeType == CURVE) {
+    if (_activeType == CURVE || (_activeType == POLYGON && _currCurve)) {
         [self endActiveCurveTranslation];
     } else {
         [_currPolygon translate:_trans];
@@ -448,7 +462,7 @@ enum ActiveType {
         } else {
             [_currCurve movePoint:&savedTrans pointType:_activePoint recursive:NO];
         }
-    } else {
+    } else if (_activePoint == TOP) {
         CGPoint savedTrans = _trans;
         ActiveCurve* prev = _currCurve.prevCurve;
         ActiveCurve* next = _currCurve.nextCurve;
@@ -572,8 +586,8 @@ enum ActiveType {
     
     if (connectToNeighbor && _currCurve.nextCurve && _currCurve.prevCurve && [ActivePolygon isThisCurveInPolygon:_currCurve]) {
         [self addPolygon:_currCurve];
-        ActiveCurve* newCurve = [[ActiveCurve alloc] init];
-        _currCurve = newCurve;
+        _currCurve = nil;
+        _activePoint = NONE;
         _currPolygon = [_polygonArr lastObject];
         _activeType = POLYGON;
     }
@@ -581,7 +595,6 @@ enum ActiveType {
     out:
     // reset translation to 0 for next move action
     _trans.x = _trans.y = 0;
-    _activePoint = NONE;
 }
 
 - (void)addPolygon:(ActiveCurve*)start
@@ -612,12 +625,13 @@ enum ActiveType {
 - (void)deselect
 {
     if (_activeType == CURVE) {
-        ActiveCurve* newCurve = [[ActiveCurve alloc] init];
         [self addCurve:_currCurve];
-        _currCurve = newCurve;
+        _currCurve = nil;
         _activeType = EMPTY;
     } else if (_activeType == POLYGON) {
         _currPolygon = nil;
+        _currCurve = nil;
+        _activePoint = NONE;
         _activeType = EMPTY;
     }
 }
@@ -645,6 +659,9 @@ enum ActiveType {
 
 - (void)setActiveLineType:(enum CurveType)type
 {
+    if (!_currCurve) {
+        _currCurve = [[ActiveCurve alloc] init];
+    }
     _currCurve.lineType = type;
 }
 
