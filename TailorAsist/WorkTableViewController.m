@@ -10,7 +10,7 @@
 #import "UITailorTableView.h"
 #import "ActiveCurve.h"
 #import "DataSetObj.h"
-#import "Matrix2D.h"
+#import "CurveAttrsViewController.h"
 
 const NSUInteger minLinePointNum = 16;
 // Should be not smaller than minLinePointNum
@@ -40,8 +40,11 @@ enum ControlState {
     enum ControlState _controlState;
     CGPoint _startPt;
     BOOL _objectSelected;
+    BOOL _popoverPresented;
+    UIPopoverController* _popoverController;
 }
 @property (weak, nonatomic) IBOutlet UITailorTableView *tailorView;
+- (void)curveAttrsUpdated:(NSNotification*)notify;
 @end
 
 @implementation WorkTableViewController
@@ -61,16 +64,43 @@ enum ControlState {
     }
 }
 
+- (void)curveAttrsUpdated:(NSNotification*)notify
+{
+    CurveAttrsViewController* cavController = (CurveAttrsViewController*)_popoverController.contentViewController;
+    if (notify.object != cavController.lenTextEdit) {
+        return;
+    }
+    NSRange textRange = [cavController.lenTextEdit.text rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"0123456789."]];
+    if (textRange.length != [cavController.lenTextEdit.text length]) {
+        return;
+    }
+    
+    float newValue = cavController.lenTextEdit.text.floatValue;
+    ActiveCurve* currCurve = [_dataSet getCurrActiveCurve];
+    if (newValue != [currCurve length]) {
+        [currCurve setNewLength:newValue];
+    }
+}
+
+- (void)awakeFromNib
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(curveAttrsUpdated:) name:UITextFieldTextDidEndEditingNotification object:nil];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     _dataSet = [[DataSetObj alloc] init];
+    _tailorView.curveSet = _dataSet;
     _controlState = DRAW_LINE;
     _objectSelected = FALSE;
-    
-    [_tailorView initViewResources:_dataSet];
+    _popoverPresented = NO;
 	// Do any additional setup after loading the view, typically from a nib.
+    UIViewController* contentVc = [self.storyboard instantiateViewControllerWithIdentifier:@"popup window"];
+    _popoverController = [[UIPopoverController alloc] initWithContentViewController:contentVc];
+    //CGRect rect = CGRectMake(300, 300, 300, 150);
+    //[popupView presentPopoverFromRect:rect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -103,9 +133,14 @@ enum ControlState {
                     [_dataSet setActiveLineType:LINE];
                 }
                 [_dataSet setActiveCurveStartPoint:pt];
+#warning "Use notification from DataSetObj to TailorTableView instead of blindly call setNeedsDisplay"
                 [_tailorView setNeedsDisplay];
                 break;
             case SELECT:
+                if (_popoverPresented) {
+                    _popoverPresented = NO;
+                    [_popoverController dismissPopoverAnimated:YES];
+                }
                 if ([_dataSet hitTest:pt]) {
                     _objectSelected = TRUE;
                     _startPt = pt;
@@ -153,9 +188,21 @@ enum ControlState {
                 break;
             case SELECT:
                 if (_objectSelected) {
-                    [_dataSet endShapeTranslation];
                     _objectSelected = FALSE;
-                    [_tailorView setNeedsDisplay];
+                    if (pt.x == _startPt.x && pt.y == _startPt.y) {
+                        ActiveCurve* currCurve = [_dataSet getCurrActiveCurve];
+                        if (currCurve) {
+                            // TODO: don't know why popover can't get data right at first
+                            CGRect rect = CGRectMake(pt.x, pt.y, 300, 150);
+                            CurveAttrsViewController* curveAttrsControl = (CurveAttrsViewController*)_popoverController.contentViewController;
+                            [curveAttrsControl specifyStart:currCurve.start end:currCurve.end];
+                            [_popoverController presentPopoverFromRect:rect inView:_tailorView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+                            _popoverPresented = YES;
+                        }
+                    } else {
+                        [_dataSet endShapeTranslation];
+                        [_tailorView setNeedsDisplay];
+                    }
                 }
                 break;
             default:

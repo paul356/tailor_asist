@@ -10,22 +10,10 @@
 #import "ActiveCurve.h"
 #import "DataSetObj.h"
 
-@interface UITailorTableView () {
-    DataSetObj* _curveSet;
-}
+@interface UITailorTableView ()
 @end
 
 @implementation UITailorTableView
-
-- (void)initViewResources:(DataSetObj*)curveSet
-{
-    _curveSet = curveSet;
-}
-
-- (void)setCurveSet:(DataSetObj *)curveSet
-{
-    _curveSet = curveSet;
-}
 
 - (void)drawRect:(CGRect)rect
 {

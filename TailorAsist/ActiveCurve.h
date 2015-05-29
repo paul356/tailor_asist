@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define PI 3.1415926
-#define TOUCH_POINT_SIZE 6
+#define TOUCH_POINT_SIZE 10
 #define MIN_CURVE_LENGTH 2
 enum CurveType {
     LINE,
@@ -49,4 +49,6 @@ double angleDiff(double ang1, double ang2);
 - (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly;
 - (void)translate:(CGPoint)pt;
 - (void)movePoint:(CGPoint*)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur;
+- (float)length;
+- (void)setNewLength:(float)nlen;
 @end

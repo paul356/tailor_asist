@@ -309,4 +309,14 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     }
 }
 
+- (float)length
+{
+    return calcDist(&_start, &_end);
+}
+
+- (void)setNewLength:(float)nlen
+{
+    
+}
+
 @end

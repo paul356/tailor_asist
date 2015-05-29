@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		7F606A7219A2383E00E961C6 /* ActiveCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F606A7119A2383E00E961C6 /* ActiveCurve.m */; };
 		7F6DCE70198647B90097FCEB /* UITailorTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F6DCE6F198647B90097FCEB /* UITailorTableView.m */; };
-		7F73021519B68275008B1241 /* Matrix2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F73021419B68275008B1241 /* Matrix2D.m */; };
 		7F75DCB01AAF231E00A97BDD /* DataSetObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F75DCAF1AAF231E00A97BDD /* DataSetObj.m */; };
 		7FABC7741947C42C008E8437 /* jesus.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7FABC7731947C42C008E8437 /* jesus.jpg */; };
 		7FB3F9D519448D3900967A11 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D419448D3900967A11 /* Foundation.framework */; };
@@ -27,6 +26,7 @@
 		7FB3F9F919448D3900967A11 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB3F9D819448D3900967A11 /* UIKit.framework */; };
 		7FB3FA0119448D3900967A11 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7FB3F9FF19448D3900967A11 /* InfoPlist.strings */; };
 		7FB3FA0319448D3900967A11 /* TailorAsistTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB3FA0219448D3900967A11 /* TailorAsistTests.m */; };
+		7FBDD4B61B08D2C800CDCAA3 /* CurveAttrsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FBDD4B51B08D2C800CDCAA3 /* CurveAttrsViewController.m */; };
 		7FC461F41AF36B590000F211 /* ActivePolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FC461F31AF36B590000F211 /* ActivePolygon.m */; };
 /* End PBXBuildFile section */
 
@@ -45,8 +45,6 @@
 		7F606A7119A2383E00E961C6 /* ActiveCurve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActiveCurve.m; sourceTree = "<group>"; };
 		7F6DCE6E198647B90097FCEB /* UITailorTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITailorTableView.h; sourceTree = "<group>"; };
 		7F6DCE6F198647B90097FCEB /* UITailorTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITailorTableView.m; sourceTree = "<group>"; };
-		7F73021319B68275008B1241 /* Matrix2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix2D.h; sourceTree = "<group>"; };
-		7F73021419B68275008B1241 /* Matrix2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix2D.m; sourceTree = "<group>"; };
 		7F75DCAE1AAF231E00A97BDD /* DataSetObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSetObj.h; sourceTree = "<group>"; };
 		7F75DCAF1AAF231E00A97BDD /* DataSetObj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSetObj.m; sourceTree = "<group>"; };
 		7FABC7731947C42C008E8437 /* jesus.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = jesus.jpg; sourceTree = "<group>"; };
@@ -70,6 +68,8 @@
 		7FB3F9FE19448D3900967A11 /* TailorAssistorTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TailorAssistorTests-Info.plist"; sourceTree = "<group>"; };
 		7FB3FA0019448D3900967A11 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7FB3FA0219448D3900967A11 /* TailorAsistTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TailorAsistTests.m; sourceTree = "<group>"; };
+		7FBDD4B41B08D2C800CDCAA3 /* CurveAttrsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveAttrsViewController.h; sourceTree = "<group>"; };
+		7FBDD4B51B08D2C800CDCAA3 /* CurveAttrsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveAttrsViewController.m; sourceTree = "<group>"; };
 		7FC461F21AF36B590000F211 /* ActivePolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivePolygon.h; sourceTree = "<group>"; };
 		7FC461F31AF36B590000F211 /* ActivePolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivePolygon.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,10 +135,10 @@
 				7FB3F9E419448D3900967A11 /* AppDelegate.m */,
 				7FB3F9E619448D3900967A11 /* Main_iPhone.storyboard */,
 				7FB3F9E919448D3900967A11 /* Main_iPad.storyboard */,
+				7FBDD4B41B08D2C800CDCAA3 /* CurveAttrsViewController.h */,
+				7FBDD4B51B08D2C800CDCAA3 /* CurveAttrsViewController.m */,
 				7FB3F9EC19448D3900967A11 /* WorkTableViewController.h */,
 				7FB3F9ED19448D3900967A11 /* WorkTableViewController.m */,
-				7F73021319B68275008B1241 /* Matrix2D.h */,
-				7F73021419B68275008B1241 /* Matrix2D.m */,
 				7F606A7019A2383E00E961C6 /* ActiveCurve.h */,
 				7F606A7119A2383E00E961C6 /* ActiveCurve.m */,
 				7FC461F21AF36B590000F211 /* ActivePolygon.h */,
@@ -287,12 +287,12 @@
 			files = (
 				7FB3F9EE19448D3900967A11 /* WorkTableViewController.m in Sources */,
 				7FB3F9E519448D3900967A11 /* AppDelegate.m in Sources */,
-				7F73021519B68275008B1241 /* Matrix2D.m in Sources */,
 				7F606A7219A2383E00E961C6 /* ActiveCurve.m in Sources */,
 				7F6DCE70198647B90097FCEB /* UITailorTableView.m in Sources */,
 				7F75DCB01AAF231E00A97BDD /* DataSetObj.m in Sources */,
 				7FC461F41AF36B590000F211 /* ActivePolygon.m in Sources */,
 				7FB3F9E119448D3900967A11 /* main.m in Sources */,
+				7FBDD4B61B08D2C800CDCAA3 /* CurveAttrsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

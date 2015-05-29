@@ -26,6 +26,7 @@
 - (BOOL)hitTest:(CGPoint)pt;
 - (void)deselect;
 - (void)discardSelectedCurve;
+- (ActiveCurve*)getCurrActiveCurve;
 
 - (void)addPolygon:(ActiveCurve*)start;
 @end

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1510" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -21,9 +21,9 @@
                                 <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                                 <subviews>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z61-88-Erj">
-                                        <rect key="frame" x="527" y="972" width="233" height="44"/>
+                                        <rect key="frame" x="452" y="972" width="308" height="44"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="233" id="EJJ-2U-SY3"/>
+                                            <constraint firstAttribute="width" constant="308" id="EJJ-2U-SY3"/>
                                         </constraints>
                                         <items>
                                             <barButtonItem title="Cursor" id="7we-41-TIw">
@@ -58,10 +58,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="QTV-sW-0in"/>
-                            <constraint firstAttribute="trailing" secondItem="JHe-LS-Y3v" secondAttribute="trailing" id="cjP-mm-abr"/>
-                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="iTD-ft-T57"/>
-                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="wZU-8t-0tX"/>
+                            <constraint firstAttribute="trailing" secondItem="JHe-LS-Y3v" secondAttribute="trailing" id="DUg-sp-5kQ"/>
+                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="bQN-5V-LE0"/>
+                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="orD-kd-8qn"/>
+                            <constraint firstItem="JHe-LS-Y3v" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="y3y-5Y-X69"/>
                         </constraints>
                     </view>
                     <connections>
@@ -70,7 +70,72 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-86" y="15"/>
+            <point key="canvasLocation" x="552" y="-353"/>
+        </scene>
+        <!--Curve Attrs View Controller-->
+        <scene sceneID="nUk-tu-4oR">
+            <objects>
+                <viewController storyboardIdentifier="popup window" id="fvM-ek-Rk8" customClass="CurveAttrsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="dM9-Yh-sab"/>
+                        <viewControllerLayoutGuide type="bottom" id="VS7-Bd-YEe"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="TXi-hj-Qic">
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="150"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Length:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MB3-Al-8Nl">
+                                <rect key="frame" x="16" y="20" width="73" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tFb-td-nrI">
+                                <rect key="frame" x="97" y="16" width="172" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="fvM-ek-Rk8" id="cNK-sw-iR8"/>
+                                </connections>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Start:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GEl-Bw-GnB">
+                                <rect key="frame" x="47" y="54" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="End:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DS6-OT-HNd">
+                                <rect key="frame" x="47" y="88" width="35" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IlI-ji-ar7">
+                                <rect key="frame" x="97" y="54" width="172" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fDC-Gh-AXz">
+                                <rect key="frame" x="97" y="88" width="172" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="300" height="150"/>
+                    <connections>
+                        <outlet property="endLabel" destination="fDC-Gh-AXz" id="Juy-f9-Yfc"/>
+                        <outlet property="lenTextEdit" destination="tFb-td-nrI" id="qx4-LB-zbB"/>
+                        <outlet property="startLabel" destination="IlI-ji-ar7" id="zjg-H1-qao"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kC6-o2-fkX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1213" y="-320"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

@@ -11,7 +11,7 @@
 #import "DataSetObj.h"
 
 @interface UITailorTableView : UIView//UIImageView
-- (void)initViewResources:(DataSetObj*)curveSet;
-- (void)setCurveSet:(DataSetObj*)curveSet;
+@property (nonatomic) DataSetObj* curveSet;
+
 - (void)drawRect:(CGRect)rect;
 @end

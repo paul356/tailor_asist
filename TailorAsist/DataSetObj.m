@@ -41,6 +41,14 @@ enum ActiveType {
     return self;
 }
 
+- (ActiveCurve*)getCurrActiveCurve
+{
+    if (_activeType == CURVE) {
+        return _currCurve;
+    }
+    return nil;
+}
+
 - (void)drawActiveCurve:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco
 {
     ActiveCurve *curve = nil;
@@ -169,6 +177,9 @@ enum ActiveType {
         [poly drawCurve:ctx color:co];
     }
 
+    assert(_activeType != EMPTY || !_currPolygon);
+    assert(_activeType != POLYGON || _currPolygon);
+    assert(_activeType == POLYGON || !_currPolygon);
     if (_activeType == CURVE)
         [self drawActiveCurve:ctx color:co activeColor:aco];
     else if (_activeType == POLYGON)
@@ -203,10 +214,12 @@ enum ActiveType {
     ActiveCurve* hitCurve = nil;
     enum ControlPointType endPtType = NONE;
     
-    endPtType = [_currCurve hitControlPoint:pt endPointOnly:FALSE];
-    if (endPtType != NONE) {
-        *ptType = endPtType;
-        return _currCurve;
+    if (_activeType == CURVE) {
+        endPtType = [_currCurve hitControlPoint:pt endPointOnly:FALSE];
+        if (endPtType != NONE) {
+            *ptType = endPtType;
+            return _currCurve;
+        }
     }
     
     for (ActiveCurve* curve in _curveArr) {
@@ -390,12 +403,16 @@ enum ActiveType {
 
 - (void)endShapeTranslation
 {
+    if (!_trans.x && !_trans.y) {
+        return;
+    }
+    
     if (_activeType == CURVE || (_activeType == POLYGON && _currCurve)) {
         [self endActiveCurveTranslation];
     } else {
         [_currPolygon translate:_trans];
-        _trans.x = _trans.y = 0;
     }
+    _trans.x = _trans.y = 0;
 }
 
 - (void)endActiveCurveTranslation
