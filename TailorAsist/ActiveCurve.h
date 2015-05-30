@@ -23,6 +23,7 @@ enum ControlPointType {
     START,
     TOP,
     END,
+    CENTER
 };
 
 double calcAngle(CGPoint* startPt, CGPoint* endPt);

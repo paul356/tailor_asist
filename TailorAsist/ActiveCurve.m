@@ -260,7 +260,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
             }
             *pt = newPt;
             break;
-        case TOP:
+        case CENTER:
         {
             ActiveCurve* prev = self.prevCurve;
             ActiveCurve* next = self.nextCurve;
@@ -304,6 +304,16 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
             *pt = newPt;
             break;
         }
+        case TOP:
+        {
+            CGPoint mid = CGPointMake((self.start.x + self.end.x) / 2, (self.start.y + self.end.y) / 2);
+            float dist = calcDist(&mid, &_top);
+            float shift = pt->x * (self.top.x - mid.x) / dist + pt->y * (self.top.y - mid.y) / dist;
+            CGPoint delta = CGPointMake(shift * (self.top.x - mid.x) / dist, shift * (self.top.y - mid.y) / dist);
+            self.top = CGPointMake(delta.x + self.top.x, delta.y + self.top.y);
+            
+            break;
+        }
         default:
             break;
     }
@@ -316,7 +326,26 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
 
 - (void)setNewLength:(float)nlen
 {
+    // Because two neighbors are fixed. We can't resize this curve
+    if (self.prevCurve && self.prevCurve.fixedDist &&
+        self.nextCurve && self.nextCurve.fixedDist) {
+        return;
+    }
     
+    CGPoint delta;
+    float olen = [self length];
+    float dx = self.end.x - self.start.x;
+    float dy = self.end.y - self.start.y;
+    delta.x = (nlen - olen) * dx / olen;
+    delta.y = (nlen - olen) * dy / olen;
+    
+    if (self.prevCurve && self.prevCurve.fixedDist) {
+        [self movePoint:&delta pointType:END recursive:YES];
+    } else {
+        delta.x = -delta.x;
+        delta.y = -delta.y;
+        [self movePoint:&delta pointType:START recursive:YES];
+    }
 }
 
 @end

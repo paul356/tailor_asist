@@ -61,6 +61,16 @@ enum ControlState {
             [_dataSet discardSelectedCurve];
             [_tailorView setNeedsDisplay];
         }
+    } else if ([barButton.title isEqualToString:@"Info"]) {
+        ActiveCurve* currCurve = [_dataSet getCurrActiveCurve];
+        if (currCurve) {
+            // TODO: don't know why popover can't get data right at first
+            CGRect rect = CGRectMake(currCurve.start.x, currCurve.start.y, 300, 150);
+            CurveAttrsViewController* curveAttrsControl = (CurveAttrsViewController*)_popoverController.contentViewController;
+            [curveAttrsControl associateCurve:currCurve];
+            [_popoverController presentPopoverFromRect:rect inView:_tailorView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            _popoverPresented = YES;
+        }
     }
 }
 
@@ -70,15 +80,21 @@ enum ControlState {
     if (notify.object != cavController.lenTextEdit) {
         return;
     }
+    /*
     NSRange textRange = [cavController.lenTextEdit.text rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"0123456789."]];
     if (textRange.length != [cavController.lenTextEdit.text length]) {
         return;
     }
+     */
     
     float newValue = cavController.lenTextEdit.text.floatValue;
+    if (newValue < MIN_CURVE_LENGTH) {
+        return;
+    }
     ActiveCurve* currCurve = [_dataSet getCurrActiveCurve];
     if (newValue != [currCurve length]) {
         [currCurve setNewLength:newValue];
+        [_tailorView setNeedsDisplay];
     }
 }
 
@@ -167,7 +183,6 @@ enum ControlState {
                 if (_objectSelected) {
                     [_dataSet updateShapeTranslation:CGPointMake(pt.x - _startPt.x, pt.y - _startPt.y)];
                     [_tailorView setNeedsDisplay];
-                    NSLog(@"Translate to %f %f\n", pt.x - _startPt.x, pt.y - _startPt.y);
                 }
                 break;
             default:
@@ -189,17 +204,7 @@ enum ControlState {
             case SELECT:
                 if (_objectSelected) {
                     _objectSelected = FALSE;
-                    if (pt.x == _startPt.x && pt.y == _startPt.y) {
-                        ActiveCurve* currCurve = [_dataSet getCurrActiveCurve];
-                        if (currCurve) {
-                            // TODO: don't know why popover can't get data right at first
-                            CGRect rect = CGRectMake(pt.x, pt.y, 300, 150);
-                            CurveAttrsViewController* curveAttrsControl = (CurveAttrsViewController*)_popoverController.contentViewController;
-                            [curveAttrsControl specifyStart:currCurve.start end:currCurve.end];
-                            [_popoverController presentPopoverFromRect:rect inView:_tailorView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-                            _popoverPresented = YES;
-                        }
-                    } else {
+                    if (pt.x != _startPt.x || pt.y != _startPt.y) {
                         [_dataSet endShapeTranslation];
                         [_tailorView setNeedsDisplay];
                     }

@@ -115,7 +115,7 @@ enum ActiveType {
             }
             
             if (!curve) {
-                if (_activePoint == TOP) {
+                if (_activePoint == CENTER) {
                     curve = [_currCurve copy];
                     [curve translate:savedTrans];
                 } else {
@@ -487,7 +487,7 @@ enum ActiveType {
         } else {
             [_currCurve movePoint:&savedTrans pointType:_activePoint recursive:NO];
         }
-    } else if (_activePoint == TOP) {
+    } else if (_activePoint == CENTER) {
         CGPoint savedTrans = _trans;
         ActiveCurve* prev = _currCurve.prevCurve;
         ActiveCurve* next = _currCurve.nextCurve;
@@ -607,6 +607,8 @@ enum ActiveType {
         if (startNearby || endNearby) {
             connectToNeighbor = YES;
         }
+    } else if (_activePoint == TOP) {
+        [_currCurve movePoint:&_trans pointType:_activePoint recursive:NO];
     }
     
     if (connectToNeighbor && _currCurve.nextCurve && _currCurve.prevCurve && [ActivePolygon isThisCurveInPolygon:_currCurve]) {

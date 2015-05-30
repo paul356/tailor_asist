@@ -41,9 +41,14 @@
                                                     <action selector="setControlState:" destination="BYZ-38-t0r" id="cQM-is-1LR"/>
                                                 </connections>
                                             </barButtonItem>
-                                            <barButtonItem title="Delete" id="Zzl-Rh-FtW">
+                                            <barButtonItem title="Info" id="Zzl-Rh-FtW">
                                                 <connections>
                                                     <action selector="setControlState:" destination="BYZ-38-t0r" id="Beb-P2-1f7"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem title="Delete" id="f5h-Vk-TiZ">
+                                                <connections>
+                                                    <action selector="setControlState:" destination="BYZ-38-t0r" id="BWr-Hg-BUT"/>
                                                 </connections>
                                             </barButtonItem>
                                         </items>

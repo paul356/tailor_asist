@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ActiveCurve.h"
 
 #define CURVE_ATTRS_CHANGE_NOTIFICATION @"CURVE_ATTRS_CHANGE_NOTIFICATION"
 
@@ -14,5 +15,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *startLabel;
 @property (weak, nonatomic) IBOutlet UITextField *lenTextEdit;
 @property (weak, nonatomic) IBOutlet UILabel *endLabel;
-- (void)specifyStart:(CGPoint)start end:(CGPoint)end;
+- (void)associateCurve:(ActiveCurve*)curve;
 @end

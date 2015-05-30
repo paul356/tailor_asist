@@ -7,9 +7,10 @@
 //
 
 #import "CurveAttrsViewController.h"
-#import "ActiveCurve.h"
 
-@interface CurveAttrsViewController () <UITextFieldDelegate>
+@interface CurveAttrsViewController () <UITextFieldDelegate> {
+    ActiveCurve *_curveToShow;
+}
 @end
 
 @implementation CurveAttrsViewController
@@ -21,16 +22,16 @@
     return YES;
 }
 
-- (void)specifyStart:(CGPoint)start end:(CGPoint)end
+- (void)associateCurve:(ActiveCurve *)curve
 {
-    _startLabel.text = [NSString stringWithFormat:@"(%.2f, %.2f)", start.x, start.y];
-    _endLabel.text   = [NSString stringWithFormat:@"(%.2f, %.2f)", end.x, end.y];
-    _lenTextEdit.text = [NSString stringWithFormat:@"%f", calcDist(&start, &end)];
-    [self.view setNeedsDisplay];
+    _curveToShow = curve;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    _startLabel.text = [NSString stringWithFormat:@"(%.2f, %.2f)", _curveToShow.start.x, _curveToShow.start.y];
+    _endLabel.text   = [NSString stringWithFormat:@"(%.2f, %.2f)", _curveToShow.end.x, _curveToShow.end.y];
+    _lenTextEdit.text = [NSString stringWithFormat:@"%f", [_curveToShow length]];
     // Do any additional setup after loading the view.
 }
 
