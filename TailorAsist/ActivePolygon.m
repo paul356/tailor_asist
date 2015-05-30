@@ -66,10 +66,22 @@
                 
                 CGPoint start = curve.start;
                 CGPoint end   = curve.end;
-                GLfloat startAngl = calcAngle(&center, &start);
-                GLfloat endAngl   = calcAngle(&center, &end);
+                CGPoint top   = curve.top;
+                GLfloat minAngl = calcAngle(&center, &start);
+                GLfloat maxAngl = calcAngle(&center, &end);
+                GLfloat topAngl = calcAngle(&center, &top);
+                if (minAngl > maxAngl) {
+                    GLfloat tmp = minAngl;
+                    minAngl = maxAngl;
+                    maxAngl = tmp;
+                }
                 
-                CGContextAddArc(ctx, center.x, center.y, radius, startAngl, endAngl, 0);
+                if ((topAngl < minAngl && topAngl < maxAngl) ||
+                    (topAngl > minAngl && topAngl > maxAngl)) {
+                    CGContextAddArc(ctx, center.x, center.y, radius, maxAngl, minAngl, 0);
+                } else {
+                    CGContextAddArc(ctx, center.x, center.y, radius, minAngl, maxAngl, 0);
+                }
             } else {
                 CGContextAddLineToPoint(ctx, curve.end.x, curve.end.y);
             }
@@ -124,10 +136,11 @@
     ActiveCurve* next = start.nextCurve;
     ActiveCurve* last = start;
     while (next != start && next != nil) {
-        last = next;
         if (next.nextCurve != last) {
+            last = next;
             next = next.nextCurve;
         } else {
+            last = next;
             next = next.prevCurve;
         }
     }

@@ -266,6 +266,7 @@ enum ActiveType {
         } else {
             [_curveArr removeObject:hitCurve];
             _currCurve = hitCurve;
+            _currPolygon = nil;
             _activePoint = ptType;
             _activeType = CURVE;
             return YES;
@@ -278,6 +279,7 @@ enum ActiveType {
     } else if (hitCurve) {
         [_curveArr removeObject:hitCurve];
         _currCurve = hitCurve;
+        _currPolygon = nil;
         _trans.x = _trans.y = 0;
         _activePoint = ptType;
         _activeType = CURVE;

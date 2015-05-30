@@ -58,6 +58,29 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     return curve;
 }
 
+- (void)drawCenter:(CGContextRef)ctx color:(CGColorRef)co
+{
+    CGPoint mid = CGPointMake((self.start.x + self.end.x)/2, (self.start.y + self.end.y)/2);
+    CGMutablePathRef path = CGPathCreateMutable();
+    int signs1[] = {1, 0, -1, 0};
+    int signs2[] = {0, 1, 0, -1};
+    CGPoint pts[4];
+    float norm = calcDist(&_start, &_end);
+    if (norm >= MIN_CURVE_LENGTH) {
+        CGPoint normVect = CGPointMake((self.end.x - self.start.x)/norm, (self.end.y - self.start.y)/norm);
+        for (int i = 0; i < sizeof(signs1)/sizeof(signs1[0]); i ++) {
+            // two sides of rectangle
+            CGPoint pt1 = CGPointMake(normVect.x * signs1[i] * TOUCH_POINT_SIZE, normVect.y * signs1[i] * TOUCH_POINT_SIZE);
+            CGPoint pt2 = CGPointMake(normVect.y * signs2[i] * TOUCH_POINT_SIZE, - normVect.x * signs2[i] * TOUCH_POINT_SIZE);
+            pts[i] = CGPointMake(pt1.x + pt2.x + mid.x, pt1.y + pt2.y + mid.y);
+        }
+        CGPathAddLines(path, nil, &pts[0], sizeof(pts)/sizeof(pts[0]));
+        CGPathCloseSubpath(path);
+        CGContextAddPath(ctx, path);
+        CGContextStrokePath(ctx);
+    }
+}
+
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
 {
     if (self.lineType == LINE) {
@@ -81,6 +104,8 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextClosePath(ctx);
         CGContextStrokePath(ctx);
         
+        [self drawCenter:ctx color:co];
+        
         CGContextRestoreGState(ctx);
     } else if (self.lineType == CIRCLE) {
         
@@ -99,8 +124,15 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         center.x = self.top.x - perp.x*radius/perpNorm;
         center.y = self.top.y - perp.y*radius/perpNorm;
         
-        GLfloat start = calcAngle(&center, &self->_start);
-        GLfloat end   = calcAngle(&center, &self->_end);
+        GLfloat min = calcAngle(&center, &self->_start);
+        GLfloat max = calcAngle(&center, &self->_end);
+        if (min > max) {
+            GLfloat tmp;
+            tmp = max;
+            max = min;
+            min = tmp;
+        }
+        GLfloat midAng= calcAngle(&center, &self->_top);
         
         CGContextSaveGState(ctx);
         
@@ -108,7 +140,12 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextSetLineWidth(ctx, 1.0);
         
         CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, center.x, center.y, radius, start, end, 0);
+        if ((midAng < min && midAng < max) ||
+            (midAng > min && midAng > max)) {
+            CGContextAddArc(ctx, center.x, center.y, radius, max, min, 0);
+        } else {
+            CGContextAddArc(ctx, center.x, center.y, radius, min, max, 0);
+        }
         CGContextStrokePath(ctx);
         
         CGContextBeginPath(ctx);
@@ -133,6 +170,8 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextMoveToPoint(ctx, self.start.x, self.start.y);
         CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
         CGContextStrokePath(ctx);
+        
+        [self drawCenter:ctx color:co];
 
         CGContextRestoreGState(ctx);
     }
@@ -146,11 +185,23 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     if (calcDist(&self->_end, &pt) < TOUCH_POINT_SIZE) {
         return END;
     }
-    if (self.lineType == CIRCLE &&
-        !endOnly &&
-        calcDist(&self->_top, &pt) < TOUCH_POINT_SIZE) {
-        return TOP;
+    if (self.lineType == CIRCLE && !endOnly) {
+        if (calcDist(&self->_top, &pt) < TOUCH_POINT_SIZE) {
+            return TOP;
+        } else {
+            CGPoint center = CGPointMake((_start.x + _end.x) / 2, (_start.y + _end.y) / 2);
+            if (calcDist(&center, &pt) < TOUCH_POINT_SIZE) {
+                return CENTER;
+            }
+        }
     }
+    if (self.lineType == LINE && !endOnly) {
+        CGPoint center = CGPointMake((_start.x + _end.x) / 2, (_start.y + _end.y) / 2);
+        if (calcDist(&center, &pt) < TOUCH_POINT_SIZE) {
+            return CENTER;
+        }
+    }
+        
     return NONE;
 }
 
@@ -310,7 +361,17 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
             float dist = calcDist(&mid, &_top);
             float shift = pt->x * (self.top.x - mid.x) / dist + pt->y * (self.top.y - mid.y) / dist;
             CGPoint delta = CGPointMake(shift * (self.top.x - mid.x) / dist, shift * (self.top.y - mid.y) / dist);
-            self.top = CGPointMake(delta.x + self.top.x, delta.y + self.top.y);
+            CGPoint new = CGPointMake(delta.x + self.top.x, delta.y + self.top.y);
+            if (calcDist(&new, &mid) < MIN_CURVE_LENGTH) {
+                if (shift > 0) {
+                    shift = MIN_CURVE_LENGTH;
+                } else {
+                    shift = -MIN_CURVE_LENGTH;
+                }
+                delta = CGPointMake(shift * (self.top.x - mid.x) / dist, shift * (self.top.y - mid.y) / dist);
+                new = CGPointMake(delta.x + mid.x, delta.y + mid.y);
+            }
+            self.top = new;
             
             break;
         }
