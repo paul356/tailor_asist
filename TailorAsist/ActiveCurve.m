@@ -58,6 +58,63 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     return curve;
 }
 
+- (void)drawRuler:(CGContextRef)ctx
+{
+    float norm = calcDist(&_start, &_end);
+    NSString* length = [NSString stringWithFormat:@"%.2f", norm];
+    CGSize bs = [length sizeWithAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12]}];
+    if (norm < MIN_CURVE_LENGTH || norm < bs.width) {
+        return;
+    }
+    
+    CGPoint normVect = CGPointMake((_end.x - _start.x) / norm, (_end.y - _start.y) / norm);
+    CGPoint perpVect;
+    if (self.lineType == LINE) {
+        perpVect = CGPointMake((_end.y - _start.y)/norm, - (_end.x - _start.x)/norm);
+    } else {
+        CGPoint mid = CGPointMake((_start.x + _end.x) / 2, (_start.y + _end.y) / 2);
+        float perpNorm = calcDist(&mid, &_top);
+        perpVect = CGPointMake((mid.x - _top.x)/perpNorm, (mid.y - _top.y)/perpNorm);
+    }
+    
+    CGPoint start1 = CGPointMake(_start.x + 2*TOUCH_POINT_SIZE*perpVect.x, _start.y + 2*TOUCH_POINT_SIZE*perpVect.y);
+    CGPoint end1   = CGPointMake(_end.x + 2*TOUCH_POINT_SIZE*perpVect.x, _end.y + 2*TOUCH_POINT_SIZE*perpVect.y);
+    CGPoint mid    = CGPointMake((start1.x + end1.x) / 2, (start1.y + end1.y) / 2);
+    int reflect = 1;
+    // This is to deal with the case: perpVect is not rotate(90) of normVet.
+    // So we can get the textOrigion right.
+    if (normVect.y * perpVect.x - normVect.x * perpVect.y < 0) {
+        reflect = -1;
+    }
+    CGPoint textOrig = CGPointMake(mid.x - bs.width * normVect.x / 2 + reflect * bs.height * perpVect.x / 2, mid.y - bs.width * normVect.y / 2 + reflect * bs.height * perpVect.y / 2);
+    float tilt = calcAngle(&start1, &end1);
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, nil, start1.x, start1.y);
+    CGPathAddLineToPoint(path, nil, start1.x + (norm - bs.width)/2*normVect.x, start1.y + (norm - bs.width)/2*normVect.y);
+    CGPathMoveToPoint(path, nil, end1.x, end1.y);
+    CGPathAddLineToPoint(path, nil, end1.x - (norm - bs.width)/2*normVect.x, end1.y - (norm - bs.width)/2*normVect.y);
+    
+    CGPathMoveToPoint(path, nil, start1.x - perpVect.x*TOUCH_POINT_SIZE, start1.y - perpVect.y*TOUCH_POINT_SIZE);
+    CGPathAddLineToPoint(path, nil, start1.x + perpVect.x*TOUCH_POINT_SIZE, start1.y + perpVect.y*TOUCH_POINT_SIZE);
+    
+    CGPathMoveToPoint(path, nil, end1.x - perpVect.x*TOUCH_POINT_SIZE, end1.y - perpVect.y*TOUCH_POINT_SIZE);
+    CGPathAddLineToPoint(path, nil, end1.x + perpVect.x*TOUCH_POINT_SIZE, end1.y + perpVect.y*TOUCH_POINT_SIZE);
+    
+    CGContextSaveGState(ctx);
+    
+    CGFloat dash[] = {2.0, 2.0};
+    CGContextSetLineDash(ctx, 0, dash, 2);
+    CGContextAddPath(ctx, path);
+    CGContextStrokePath(ctx);
+    
+    CGContextTranslateCTM(ctx, textOrig.x, textOrig.y);
+    CGContextRotateCTM(ctx, tilt);
+    [length drawAtPoint:CGPointMake(0, 0) withAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12], NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    
+    CGContextRestoreGState(ctx);
+}
+
 - (void)drawCenter:(CGContextRef)ctx color:(CGColorRef)co
 {
     CGPoint mid = CGPointMake((self.start.x + self.end.x)/2, (self.start.y + self.end.y)/2);
@@ -81,14 +138,34 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     }
 }
 
+- (void)calcRadius:(double *)radius Center:(CGPoint *)center
+{
+    CGPoint perp;
+    perp.x = (2*self.top.x - self.start.x - self.end.x)/2.0;
+    perp.y = (2*self.top.y - self.start.y - self.end.y)/2.0;
+    
+    double perpNorm2 = perp.x * perp.x + perp.y * perp.y;
+    if (perpNorm2 < 0.5) {
+        *radius = calcDist(&_start, &_end)/2;
+        center->x = (self.start.x + self.start.x)/2;
+        center->y = (self.start.y + self.start.y)/2;
+        return;
+    }
+    
+    double perpNorm = sqrt(perpNorm2);
+    *radius = ((self.end.x - self.start.x)*(self.end.x - self.start.x) + (self.end.y - self.start.y)*(self.end.y - self.start.y))/(8*perpNorm) + perpNorm/2.0;
+    center->x = self.top.x - perp.x*(*radius)/perpNorm;
+    center->y = self.top.y - perp.y*(*radius)/perpNorm;
+}
+
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
 {
     if (self.lineType == LINE) {
         CGContextSaveGState(ctx);
-
+        
         CGContextSetStrokeColorWithColor(ctx, co);
         CGContextSetLineWidth(ctx, 1.0);
-                
+        
         CGContextBeginPath(ctx);
         CGContextMoveToPoint(ctx, self.start.x, self.start.y);
         CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
@@ -105,24 +182,13 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextStrokePath(ctx);
         
         [self drawCenter:ctx color:co];
+        [self drawRuler:ctx];
         
         CGContextRestoreGState(ctx);
     } else if (self.lineType == CIRCLE) {
-        
-        CGPoint perp;
-        perp.x = (2*self.top.x - self.start.x - self.end.x)/2.0;
-        perp.y = (2*self.top.y - self.start.y - self.end.y)/2.0;
-        
-        double perpNorm2 = perp.x * perp.x + perp.y * perp.y;
-        if (perpNorm2 < 0.5) {
-            return;
-        }
-        
-        double perpNorm = sqrt(perpNorm2);
-        double radius = ((self.end.x - self.start.x)*(self.end.x - self.start.x) + (self.end.y - self.start.y)*(self.end.y - self.start.y))/(8*perpNorm) + perpNorm/2.0;
+        double radius;
         CGPoint center;
-        center.x = self.top.x - perp.x*radius/perpNorm;
-        center.y = self.top.y - perp.y*radius/perpNorm;
+        [self calcRadius:&radius Center:&center];
         
         GLfloat min = calcAngle(&center, &self->_start);
         GLfloat max = calcAngle(&center, &self->_end);
@@ -147,7 +213,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
             CGContextAddArc(ctx, center.x, center.y, radius, min, max, 0);
         }
         CGContextStrokePath(ctx);
-        
+    
         CGContextBeginPath(ctx);
         CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
         CGContextClosePath(ctx);
@@ -172,7 +238,8 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextStrokePath(ctx);
         
         [self drawCenter:ctx color:co];
-
+        [self drawRuler:ctx];
+        
         CGContextRestoreGState(ctx);
     }
 }
@@ -203,6 +270,48 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     }
         
     return NONE;
+}
+
+- (BOOL)hitTest:(CGPoint)pt
+{
+    if (self.lineType == LINE) {
+        float norm2 = (_end.x - _start.x)*(_end.x - _start.x) + (_end.y - _start.y)*(_end.y - _start.y);
+        float project = (pt.x - _start.x)*(_end.x - _start.x) + (pt.y - _start.y)*(_end.y - _start.y);
+        float ratio = project/norm2;
+        if (ratio < 0 || ratio > 1) {
+            return NO;
+        }
+        CGPoint distVect = CGPointMake(pt.x - _start.x - ratio*(_end.x - _start.x), pt.y - _start.y - ratio*(_end.y - _start.y));
+        float dist2 = distVect.x * distVect.x + distVect.y * distVect.y;
+        if (dist2 <= TOUCH_POINT_SIZE*TOUCH_POINT_SIZE) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } else if (self.lineType == CIRCLE) {
+        double radius;
+        CGPoint center;
+        [self calcRadius:&radius Center:&center];
+        
+        GLfloat dist = calcDist(&pt, &center);
+        if (dist - radius < -TOUCH_POINT_SIZE ||
+            dist - radius > TOUCH_POINT_SIZE) {
+            return NO;
+        }
+        
+        // TODO: continue checking if pt is one same side of top
+        CGPoint perp = CGPointMake(_end.y - _start.y, - _end.x + _start.x);
+        CGPoint mid  = CGPointMake((_start.x + _end.x)/2, (_start.y + _end.y)/2);
+        float side = perp.x * (_top.x - mid.x) + perp.y * (_top.y - mid.y);
+        float side1 = perp.x * (pt.x - mid.x) + perp.y * (pt.y - mid.y);
+        if (side * side1 < 0) {
+            return NO;
+        }
+        
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (void)translate:(CGPoint)pt

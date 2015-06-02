@@ -14,7 +14,6 @@
 enum CurveType {
     LINE,
     CIRCLE,
-    BSPLINE,
     UNKNOWN
 };
 
@@ -47,9 +46,11 @@ double angleDiff(double ang1, double ang2);
 - (instancetype)init;
 - (id)copy;
 - (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
+- (BOOL)hitTest:(CGPoint)pt;
 - (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly;
 - (void)translate:(CGPoint)pt;
 - (void)movePoint:(CGPoint*)pt pointType:(enum ControlPointType)ptType recursive:(BOOL)recur;
 - (float)length;
 - (void)setNewLength:(float)nlen;
+- (void)calcRadius:(double *)radius Center:(CGPoint *)center;
 @end

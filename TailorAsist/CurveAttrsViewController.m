@@ -18,7 +18,6 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
-    //[[NSNotificationCenter defaultCenter] postNotificationName:CURVE_ATTRS_CHANGE_NOTIFICATION object:nil];
     return YES;
 }
 

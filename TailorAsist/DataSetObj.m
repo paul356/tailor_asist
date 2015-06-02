@@ -3,7 +3,7 @@
 //  TailorAssistor
 //
 //  Created by user1 on 15/3/10.
-//  Copyright (c) 2015年 user1. All rights reserved.
+//  Copyright (c) 2015年 Paul.Pan. All rights reserved.
 //
 
 #import "DataSetObj.h"
@@ -44,6 +44,9 @@ enum ActiveType {
 - (ActiveCurve*)getCurrActiveCurve
 {
     if (_activeType == CURVE) {
+        return _currCurve;
+    }
+    if (_activeType == POLYGON) {
         return _currCurve;
     }
     return nil;
@@ -223,9 +226,10 @@ enum ActiveType {
     }
     
     for (ActiveCurve* curve in _curveArr) {
-        if ((endPtType = [curve hitControlPoint:pt endPointOnly:FALSE]) != NONE) {
+        // TODO: Refactor the hit test code
+        if ((endPtType = [curve hitTest:pt]) != NONE) {
             hitCurve = curve;
-            *ptType  = endPtType;
+            *ptType  = CENTER;
             break;
         }
     }
@@ -667,21 +671,32 @@ enum ActiveType {
 
 - (void)discardSelectedCurve
 {
-    if (_currCurve.prevCurve) {
-        if (_currCurve.prevCurve.nextCurve == _currCurve) {
-            _currCurve.prevCurve.nextCurve = nil;
-        } else {
-            _currCurve.prevCurve.prevCurve = nil;
+    if (_activeType == CURVE) {
+        assert(!_currPolygon);
+        if (_currCurve.prevCurve) {
+            if (_currCurve.prevCurve.nextCurve == _currCurve) {
+                _currCurve.prevCurve.nextCurve = nil;
+            } else {
+                _currCurve.prevCurve.prevCurve = nil;
+            }
+            _currCurve.prevCurve = nil;
         }
-        _currCurve.prevCurve = nil;
-    }
-    if (_currCurve.nextCurve) {
-        if (_currCurve.nextCurve.nextCurve == _currCurve) {
-            _currCurve.nextCurve.nextCurve = nil;
-        } else {
-            _currCurve.nextCurve.prevCurve = nil;
+        if (_currCurve.nextCurve) {
+            if (_currCurve.nextCurve.nextCurve == _currCurve) {
+                _currCurve.nextCurve.nextCurve = nil;
+            } else {
+                _currCurve.nextCurve.prevCurve = nil;
+            }
+            _currCurve.nextCurve = nil;
         }
-        _currCurve.nextCurve = nil;
+        _currCurve = nil;
+        _activePoint = NONE;
+    } else {
+        assert(_activeType == POLYGON && _currPolygon);
+        [_polygonArr removeObject:_currPolygon];
+        _currPolygon = nil;
+        _currCurve = nil;
+        _activePoint = NONE;
     }
     _activeType = EMPTY;
 }
