@@ -158,7 +158,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     center->y = self.top.y - perp.y*(*radius)/perpNorm;
 }
 
-- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co selected:(BOOL)select
 {
     if (self.lineType == LINE) {
         CGContextSaveGState(ctx);
@@ -171,18 +171,20 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
         CGContextStrokePath(ctx);
         
-        CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
-        CGContextClosePath(ctx);
-        CGContextStrokePath(ctx);
-        
-        CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.end.x, self.end.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
-        CGContextClosePath(ctx);
-        CGContextStrokePath(ctx);
-        
-        [self drawCenter:ctx color:co];
-        [self drawRuler:ctx];
+        if (select) {
+            CGContextBeginPath(ctx);
+            CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
+            CGContextClosePath(ctx);
+            CGContextStrokePath(ctx);
+            
+            CGContextBeginPath(ctx);
+            CGContextAddArc(ctx, self.end.x, self.end.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
+            CGContextClosePath(ctx);
+            CGContextStrokePath(ctx);
+            
+            //[self drawCenter:ctx color:co];
+            [self drawRuler:ctx];
+        }
         
         CGContextRestoreGState(ctx);
     } else if (self.lineType == CIRCLE) {
@@ -214,31 +216,33 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
         }
         CGContextStrokePath(ctx);
     
-        CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
-        CGContextClosePath(ctx);
-        CGContextStrokePath(ctx);
-        
-        CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.end.x, self.end.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
-        CGContextClosePath(ctx);
-        CGContextStrokePath(ctx);
-        
-        CGContextBeginPath(ctx);
-        CGContextAddArc(ctx, self.top.x, self.top.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
-        CGContextClosePath(ctx);
-        CGContextStrokePath(ctx);
-        
-        CGFloat dash[] = {2.0, 2.0};
-        CGContextSetLineDash(ctx, 0, dash, 2);
-        
-        CGContextBeginPath(ctx);
-        CGContextMoveToPoint(ctx, self.start.x, self.start.y);
-        CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
-        CGContextStrokePath(ctx);
-        
-        [self drawCenter:ctx color:co];
-        [self drawRuler:ctx];
+        if (select) {
+            CGContextBeginPath(ctx);
+            CGContextAddArc(ctx, self.start.x, self.start.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
+            CGContextClosePath(ctx);
+            CGContextStrokePath(ctx);
+            
+            CGContextBeginPath(ctx);
+            CGContextAddArc(ctx, self.end.x, self.end.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
+            CGContextClosePath(ctx);
+            CGContextStrokePath(ctx);
+            
+            CGContextBeginPath(ctx);
+            CGContextAddArc(ctx, self.top.x, self.top.y, TOUCH_POINT_SIZE, 0, 2*PI, 0);
+            CGContextClosePath(ctx);
+            CGContextStrokePath(ctx);
+            
+            CGFloat dash[] = {2.0, 2.0};
+            CGContextSetLineDash(ctx, 0, dash, 2);
+            
+            CGContextBeginPath(ctx);
+            CGContextMoveToPoint(ctx, self.start.x, self.start.y);
+            CGContextAddLineToPoint(ctx, self.end.x, self.end.y);
+            CGContextStrokePath(ctx);
+            
+            //[self drawCenter:ctx color:co];
+            [self drawRuler:ctx];
+        }
         
         CGContextRestoreGState(ctx);
     }
@@ -255,21 +259,14 @@ double calcDist(CGPoint* startPt, CGPoint* endPt)
     if (self.lineType == CIRCLE && !endOnly) {
         if (calcDist(&self->_top, &pt) < TOUCH_POINT_SIZE) {
             return TOP;
-        } else {
-            CGPoint center = CGPointMake((_start.x + _end.x) / 2, (_start.y + _end.y) / 2);
-            if (calcDist(&center, &pt) < TOUCH_POINT_SIZE) {
-                return CENTER;
-            }
         }
     }
-    if (self.lineType == LINE && !endOnly) {
-        CGPoint center = CGPointMake((_start.x + _end.x) / 2, (_start.y + _end.y) / 2);
-        if (calcDist(&center, &pt) < TOUCH_POINT_SIZE) {
-            return CENTER;
-        }
+    
+    if (!endOnly && [self hitTest:pt]) {
+        return CENTER;
+    } else {
+        return NONE;
     }
-        
-    return NONE;
 }
 
 - (BOOL)hitTest:(CGPoint)pt

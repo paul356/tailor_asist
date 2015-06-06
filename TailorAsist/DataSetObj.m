@@ -71,7 +71,7 @@ enum ActiveType {
             if (next && next.fixedDist && _currCurve.fixedDist) {
                 savedTrans.x = savedTrans.y = 0;
             }
-        } else {
+        } else if (_activePoint == CENTER) {
             prev = _currCurve.prevCurve;
             next = _currCurve.nextCurve;
             if (next && next.fixedDist && prev && prev.fixedDist) {
@@ -99,7 +99,7 @@ enum ActiveType {
                         [nextToDraw movePoint:&savedTrans pointType:END recursive:NO];
                     }
                 }
-            } else {
+            } else if (_activePoint == CENTER) {
                 if (prev && prev.fixedDist) {
                     prevToDraw = [prev copy];
                     if (prevToDraw.prevCurve == _currCurve) {
@@ -150,10 +150,10 @@ enum ActiveType {
         curve = _currCurve;
     }
     
-    [_currCurve drawCurve:ctx color:co];
-    [curve drawCurve:ctx color:aco];
-    [prevToDraw drawCurve:ctx color:aco];
-    [nextToDraw drawCurve:ctx color:aco];
+    [_currCurve drawCurve:ctx color:co selected:YES];
+    [curve drawCurve:ctx color:aco selected:YES];
+    [prevToDraw drawCurve:ctx color:aco selected:NO];
+    [nextToDraw drawCurve:ctx color:aco selected:NO];
 }
 
 - (void)drawActivePolygon:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco
@@ -164,29 +164,34 @@ enum ActiveType {
         } else {
             ActivePolygon* tmpPoly = [_currPolygon copy];
             [tmpPoly translate:_trans];
-            [tmpPoly drawCurve:ctx color:aco];
+            [tmpPoly drawCurve:ctx color:aco selected:YES];
         }
     } else {
-        [_currPolygon drawCurve:ctx color:aco];
+        [_currPolygon drawCurve:ctx color:aco selected:YES];
+        if (_currCurve) {
+            assert(_currPolygon.curveView);
+            [_currCurve drawCurve:ctx color:aco selected:YES];
+        }
     }
 }
 
 - (void)drawCurveSet:(CGContextRef)ctx color:(CGColorRef)co activeColor:(CGColorRef)aco
 {
     for (ActiveCurve* curve in _curveArr) {
-        [curve drawCurve:ctx color:co];
+        [curve drawCurve:ctx color:co selected:NO];
     }
     for (ActivePolygon* poly in _polygonArr) {
-        [poly drawCurve:ctx color:co];
+        [poly drawCurve:ctx color:co selected:NO];
     }
 
     assert(_activeType != EMPTY || !_currPolygon);
     assert(_activeType != POLYGON || _currPolygon);
     assert(_activeType == POLYGON || !_currPolygon);
-    if (_activeType == CURVE)
+    if (_activeType == CURVE) {
         [self drawActiveCurve:ctx color:co activeColor:aco];
-    else if (_activeType == POLYGON)
+    } else if (_activeType == POLYGON) {
         [self drawActivePolygon:ctx color:co activeColor:aco];
+    }
 }
 
 - (void)addCurve:(ActiveCurve*)newCurve
@@ -226,7 +231,6 @@ enum ActiveType {
     }
     
     for (ActiveCurve* curve in _curveArr) {
-        // TODO: Refactor the hit test code
         if ((endPtType = [curve hitTest:pt]) != NONE) {
             hitCurve = curve;
             *ptType  = CENTER;
@@ -250,6 +254,13 @@ enum ActiveType {
 {
     enum ControlPointType ptType = NONE;
     if (_currPolygon && _currPolygon.curveView) {
+        if (_currCurve) {
+            enum ControlPointType hitType = [_currCurve hitControlPoint:pt endPointOnly:NO];
+            if (hitType != NONE) {
+                _activePoint = hitType;
+                return YES;
+            }
+        }
         ActiveCurve* hitCurve = [_currPolygon hitInnerCurve:pt endPointType:&ptType];
         if (hitCurve) {
             _currCurve = hitCurve;

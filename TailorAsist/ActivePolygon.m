@@ -31,11 +31,11 @@
     return new;
 }
 
-- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co selected:(BOOL)select
 {
     if (self.curveView) {
         for (ActiveCurve* curve in _curves) {
-            [curve drawCurve:ctx color:co];
+            [curve drawCurve:ctx color:co selected:NO];
         }
     } else {
         CGContextSetFillColorWithColor(ctx, co);
@@ -122,9 +122,8 @@
 - (ActiveCurve*)hitInnerCurve:(CGPoint)pt endPointType:(enum ControlPointType*)ptType
 {
     for (ActiveCurve* curve in _curves) {
-        enum ControlPointType ptype = [curve hitControlPoint:pt endPointOnly:NO];
-        if (ptype != NONE) {
-            *ptType = ptype;
+        if ([curve hitTest:pt]) {
+            *ptType = CENTER;
             return curve;
         }
     }

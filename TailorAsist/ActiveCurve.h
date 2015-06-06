@@ -30,7 +30,7 @@ double calcDist(CGPoint* startPt, CGPoint* endPt);
 double angleDiff(double ang1, double ang2);
 
 @protocol DrawableShape <NSObject>
-- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co selected:(BOOL)select;
 - (void)translate:(CGPoint)pt;
 @end
 
@@ -45,7 +45,7 @@ double angleDiff(double ang1, double ang2);
 @property (nonatomic) ActiveCurve* nextCurve;
 - (instancetype)init;
 - (id)copy;
-- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co selected:(BOOL)select;
 - (BOOL)hitTest:(CGPoint)pt;
 - (enum ControlPointType)hitControlPoint:(CGPoint)pt endPointOnly:(BOOL)endOnly;
 - (void)translate:(CGPoint)pt;

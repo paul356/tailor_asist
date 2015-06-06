@@ -12,7 +12,7 @@
 @interface ActivePolygon : NSObject <DrawableShape>
 @property (nonatomic) BOOL curveView;
 
-- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co;
+- (void)drawCurve:(CGContextRef)ctx color:(CGColorRef)co selected:(BOOL)select;
 - (void)translate:(CGPoint)pt;
 
 - (instancetype)init;
